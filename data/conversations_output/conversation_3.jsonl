@@ -1,0 +1,47 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، من کنانی هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "ممنون از تماس",
+        "خداحافظ"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "contact_reason_summary": "دریافت عکس از برنامه‌های پیام‌رسان (مانند واتساپ، تلگرام، روبیکا) برای سیم‌کارت کاربر انجام نمی‌شود",
+    "dialogue_summary": "کارشناس با سلام و معرفی شروع کرد، شماره‌گیر را دریافت کرد و مشکل دریافت عکس در برنامه‌های پیام‌رسان را بررسی کرد؛ راهکارهایی شامل بررسی اتصال اینترنت، پاک‌سازی کش، حذف و نصب مجدد برنامه‌ها و در صورت نیاز تماس با پشتیبانی ارائه داد و در پایان با تشکر و خداحافظی پایان داد"
+  }
+}

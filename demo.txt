@@ -1,0 +1,204 @@
+
+=== Postgres: create tables ===
+
+=== Postgres: insert mock data ===
+Inserted call IDs: [31, 32, 33]
+
+=== Postgres: select ===
+(1, 'positive', 'Quick, helpful call.')
+(2, 'neutral', 'Issue unresolved.')
+(3, 'negative', 'Customer was upset.')
+(4, 'positive', 'Quick, helpful call.')
+(5, 'neutral', 'Issue unresolved.')
+(6, 'negative', 'Customer was upset.')
+(7, 'positive', 'Quick, helpful call.')
+(8, 'neutral', 'Issue unresolved.')
+(9, 'negative', 'Customer was upset.')
+(10, 'positive', 'Quick, helpful call.')
+(11, 'neutral', 'Issue unresolved.')
+(12, 'negative', 'Customer was upset.')
+(13, 'positive', 'Quick, helpful call.')
+(14, 'neutral', 'Issue unresolved.')
+(15, 'negative', 'Customer was upset.')
+(16, 'positive', 'Quick, helpful call.')
+(17, 'neutral', 'Issue unresolved.')
+(18, 'negative', 'Customer was upset.')
+(19, 'positive', 'Quick, helpful call.')
+(20, 'neutral', 'Issue unresolved.')
+(21, 'negative', 'Customer was upset.')
+(22, 'positive', 'Quick, helpful call.')
+(23, 'neutral', 'Issue unresolved.')
+(24, 'negative', 'Customer was upset.')
+(25, 'positive', 'Quick, helpful call.')
+(26, 'neutral', 'Issue unresolved.')
+(27, 'negative', 'Customer was upset.')
+(28, 'positive', 'Quick, helpful call.')
+(29, 'neutral', 'Issue unresolved.')
+(30, 'negative', 'Customer was upset.')
+(31, 'positive', 'Quick, helpful call.')
+(32, 'neutral', 'Issue unresolved.')
+(33, 'negative', 'Customer was upset.')
+
+=== Postgres: upsert ===
+[('alpha', 2)]
+
+=== Postgres: EXPLAIN and statement timeout ===
+Explain: [('Index Scan using calls_analysis_pkey on calls_analysis  (cost=0.15..8.17 rows=1 width=102)',), ('  Index Cond: (id = 31)',)]
+Statement timeout set.
+
+=== ClickHouse: create tables ===
+CREATE DATABASE IF NOT EXISTS zaal
+None
+CREATE TABLE IF NOT EXISTS zaal.selected_calls_details (call_id UInt64, subscriber_id UInt64, expert_id UInt64, call_timestamp DateTime, duration_seconds UInt32, features String) ENGINE = MergeTree() ORDER BY (expert_id, call_timestamp)
+None
+CREATE TABLE IF NOT EXISTS zaal.experts (expert_id UInt64, name String) ENGINE = MergeTree() ORDER BY (expert_id)
+None
+
+=== ClickHouse: load mock data ===
+
+        INSERT INTO selected_calls_details (call_id, subscriber_id, expert_id, call_timestamp, duration_seconds, features)
+        VALUES (%(call_id)s, %(subscriber_id)s, %(expert_id)s, %(call_timestamp)s, %(duration_seconds)s, %(features)s);
+        
+{'call_id': 1000, 'subscriber_id': 200, 'expert_id': 10, 'call_timestamp': '2025-01-01 09:00:00', 'duration_seconds': 60, 'features': '{"topic": "billing", "score": 0.5, "flag": true}'}
+
+        INSERT INTO selected_calls_details (call_id, subscriber_id, expert_id, call_timestamp, duration_seconds, features)
+        VALUES (%(call_id)s, %(subscriber_id)s, %(expert_id)s, %(call_timestamp)s, %(duration_seconds)s, %(features)s);
+        
+{'call_id': 1001, 'subscriber_id': 201, 'expert_id': 11, 'call_timestamp': '2025-01-01 10:00:00', 'duration_seconds': 120, 'features': '{"topic": "tech", "score": 0.6, "flag": false}'}
+
+        INSERT INTO selected_calls_details (call_id, subscriber_id, expert_id, call_timestamp, duration_seconds, features)
+        VALUES (%(call_id)s, %(subscriber_id)s, %(expert_id)s, %(call_timestamp)s, %(duration_seconds)s, %(features)s);
+        
+{'call_id': 1002, 'subscriber_id': 200, 'expert_id': 12, 'call_timestamp': '2025-01-01 11:00:00', 'duration_seconds': 180, 'features': '{"topic": "general", "score": 0.7, "flag": true}'}
+
+        INSERT INTO selected_calls_details (call_id, subscriber_id, expert_id, call_timestamp, duration_seconds, features)
+        VALUES (%(call_id)s, %(subscriber_id)s, %(expert_id)s, %(call_timestamp)s, %(duration_seconds)s, %(features)s);
+        
+{'call_id': 1003, 'subscriber_id': 201, 'expert_id': 10, 'call_timestamp': '2025-01-01 12:00:00', 'duration_seconds': 240, 'features': '{"topic": "billing", "score": 0.8, "flag": false}'}
+
+        INSERT INTO selected_calls_details (call_id, subscriber_id, expert_id, call_timestamp, duration_seconds, features)
+        VALUES (%(call_id)s, %(subscriber_id)s, %(expert_id)s, %(call_timestamp)s, %(duration_seconds)s, %(features)s);
+        
+{'call_id': 1004, 'subscriber_id': 200, 'expert_id': 11, 'call_timestamp': '2025-01-01 13:00:00', 'duration_seconds': 300, 'features': '{"topic": "tech", "score": 0.9, "flag": true}'}
+
+        INSERT INTO selected_calls_details (call_id, subscriber_id, expert_id, call_timestamp, duration_seconds, features)
+        VALUES (%(call_id)s, %(subscriber_id)s, %(expert_id)s, %(call_timestamp)s, %(duration_seconds)s, %(features)s);
+        
+{'call_id': 1005, 'subscriber_id': 201, 'expert_id': 12, 'call_timestamp': '2025-01-01 14:00:00', 'duration_seconds': 360, 'features': '{"topic": "general", "score": 1.0, "flag": false}'}
+INSERT INTO zaal.experts (expert_id, name) VALUES
+[(10, 'Alice'), (11, 'Bob'), (12, 'Carol')]
+Inserted selected_calls_details and experts.
+
+=== ClickHouse: aggregate ===
+SELECT expert_id, count() AS total_calls, avg(duration_seconds) AS avg_duration FROM zaal.selected_calls_details GROUP BY expert_id ORDER BY expert_id
+None
+(10, 13, 143.07692307692307)
+(11, 10, 210.0)
+(12, 10, 270.0)
+
+=== ClickHouse: window ===
+SELECT call_id, expert_id, duration_seconds, call_timestamp, row_number() OVER (PARTITION BY expert_id ORDER BY call_timestamp), sum(duration_seconds) OVER (PARTITION BY expert_id ORDER BY call_timestamp) FROM zaal.selected_calls_details
+None
+(1005, 12, 360, datetime.datetime(2025, 1, 1, 14, 0), 6, 2700)
+(1005, 12, 360, datetime.datetime(2025, 1, 1, 14, 0), 7, 2700)
+(1005, 12, 360, datetime.datetime(2025, 1, 1, 14, 0), 8, 2700)
+(1005, 12, 360, datetime.datetime(2025, 1, 1, 14, 0), 9, 2700)
+(1005, 12, 360, datetime.datetime(2025, 1, 1, 14, 0), 10, 2700)
+
+=== ClickHouse: time_bucket (day) ===
+SELECT toStartOfDay(call_timestamp) AS bucket, count() AS calls, sum(duration_seconds) AS dur_sum FROM zaal.selected_calls_details GROUP BY bucket ORDER BY bucket
+None
+(datetime.datetime(2025, 1, 1, 0, 0), 30, 6300)
+(datetime.datetime(2025, 1, 2, 0, 0), 3, 360)
+
+=== ClickHouse: filter ===
+SELECT expert_id, call_id, duration_seconds FROM zaal.selected_calls_details WHERE duration_seconds >= 180 ORDER BY duration_seconds DESC LIMIT 5
+None
+(12, 1005, 360)
+(12, 1005, 360)
+(12, 1005, 360)
+(12, 1005, 360)
+(12, 1005, 360)
+
+=== ClickHouse: join with experts ===
+SELECT zaal.selected_calls_details.expert_id, zaal.experts.name, count() AS c FROM zaal.selected_calls_details LEFT JOIN zaal.experts ON zaal.selected_calls_details.expert_id = zaal.experts.expert_id GROUP BY zaal.selected_calls_details.expert_id, zaal.experts.name ORDER BY zaal.selected_calls_details.expert_id SETTINGS join_algorithm='auto'
+None
+(10, 'Alice', 52)
+(11, 'Bob', 40)
+(12, 'Carol', 40)
+
+=== ClickHouse: materialized view -> target table ===
+CREATE TABLE IF NOT EXISTS zaal.expert_calls_mv_target (expert_id UInt64, cnt UInt64) ENGINE = MergeTree() ORDER BY (expert_id)
+None
+CREATE MATERIALIZED VIEW IF NOT EXISTS zaal.mv_expert_calls TO zaal.expert_calls_mv_target AS SELECT expert_id, count() AS cnt FROM zaal.selected_calls_details GROUP BY expert_id
+None
+
+        INSERT INTO selected_calls_details (call_id, subscriber_id, expert_id, call_timestamp, duration_seconds, features)
+        VALUES (%(call_id)s, %(subscriber_id)s, %(expert_id)s, %(call_timestamp)s, %(duration_seconds)s, %(features)s);
+        
+{'call_id': 9999, 'subscriber_id': 299, 'expert_id': 10, 'call_timestamp': '2025-01-02 10:00:00', 'duration_seconds': 120, 'features': '{"topic":"general","score":0.9,"flag":false}'}
+SELECT * FROM zaal.expert_calls_mv_target ORDER BY expert_id
+None
+(10, 1)
+(10, 1)
+(10, 1)
+(10, 1)
+(10, 1)
+(10, 1)
+(10, 1)
+(10, 1)
+(10, 1)
+(10, 1)
+(11, 1)
+(11, 1)
+(11, 1)
+(11, 1)
+(11, 1)
+(11, 1)
+(12, 1)
+(12, 1)
+(12, 1)
+(12, 1)
+(12, 1)
+(12, 1)
+
+=== ClickHouse: sample ===
+
+                SELECT sampling_key != '' AS supports
+                FROM system.tables
+                WHERE database = %(db)s AND name = %(tbl)s
+                LIMIT 1
+                
+{'db': 'zaal', 'tbl': 'selected_calls_details'}
+SELECT expert_id, call_id, duration_seconds FROM zaal.selected_calls_details WHERE randCanonical() < 0.5 LIMIT 3
+None
+(10, 9999, 120)
+(10, 1000, 60)
+(10, 1000, 60)
+
+=== ClickHouse: JSON extract ===
+SELECT JSONExtractString(features, 'topic') AS topic, JSONExtractFloat(features, 'score') AS score, JSONExtractBool(features, 'flag') AS flag FROM zaal.selected_calls_details LIMIT 5
+None
+('billing', 0.5, 1)
+('billing', 0.5, 1)
+('billing', 0.5, 1)
+('billing', 0.5, 1)
+('billing', 0.5, 1)
+
+=== ClickHouse: grouping sets ===
+SELECT expert_id, count() AS cnt, sum(duration_seconds) AS dur_sum FROM zaal.selected_calls_details GROUP BY GROUPING SETS ((), (expert_id)) ORDER BY expert_id SETTINGS max_bytes_before_external_group_by=0
+None
+(0, 34, 6780)
+(10, 14, 1980)
+(11, 10, 2100)
+(12, 10, 2700)
+
+=== ClickHouse: optimize and explain ===
+OPTIMIZE TABLE zaal.selected_calls_details FINAL
+None
+[]
+EXPLAIN SELECT count() FROM zaal.selected_calls_details WHERE duration_seconds > 0
+None
+[('Expression ((Project names + Projection))',), ('  Aggregating',), ('    Expression (Before GROUP BY)',), ('      Filter ((WHERE + Change column names to column identifiers))',), ('        ReadFromMergeTree (zaal.selected_calls_details)',)]
+
+=== Demo completed ===

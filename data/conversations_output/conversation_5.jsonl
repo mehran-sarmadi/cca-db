@@ -1,0 +1,44 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام نعیمی هستم بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": false,
+      "where": []
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "contact_reason_summary": "ضعف پوشش و سرعت اینترنت در منزل، مشکل مداوم به‌مدت دو سال و درخواست بهبود سرویس",
+    "dialogue_summary": "کارشناس با سلام و معرفی شروع کرد، مشکل اینترنت ضعیف و پوشش ناکافی مشترک را بررسی کرد و توضیح داد که برای رفع مشکل نیاز به نصب دکل جدید در منطقه است. کارشناس قول داد درخواست را به تیم فنی منتقل کند و مشترک از توضیحات و کمک کارشناس تشکر کرد."
+  }
+}

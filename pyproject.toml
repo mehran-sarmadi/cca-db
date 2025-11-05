@@ -1,0 +1,13 @@
+[project]
+name = "cca-db"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "clickhouse-driver>=0.2.9",
+    "mysql>=0.0.3",
+    "mysql-connector-python>=9.5.0",
+    "psycopg2>=2.9.11",
+    "python-dotenv>=1.2.1",
+]
