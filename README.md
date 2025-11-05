@@ -1,58 +1,67 @@
-# cca-db
+CCA-DB quickstart
+=================
 
-Compact helpers for working with PostgreSQL and ClickHouse.
+This repo provides tiny admin/client wrappers around Postgres and ClickHouse plus a runnable sample that loads mock call data and demonstrates:
 
-## Structure
+- Creating tables (idempotent)
+- Inserting JSON-rich rows
+- Simple SELECT with JSON filters
+- Aggregations using helper builders (WHERE, GROUP BY, HAVING, ORDER BY)
+- Time-bucketing metrics in ClickHouse
 
-- `src/cca_db/`
-  - `clients.py`: `PostgresClient`, `ClickHouseClient` low-level wrappers
-  - `admin.py`: `PostgresAdmin`, `ClickHouseAdmin` higher-level DDL/DML/analytics helpers
-  - `config.py`: `POSTGRES_TABLES`, `CLICKHOUSE_TABLES` configuration maps
-  - `__init__.py`: public exports
+Prereqs
+-------
 
-Legacy shims remain in `src/dbs.py`, `src/dbs_admin.py`, and `src/tables_config.py` but are deprecated and will be removed in a future version.
+- Python 3.12+
+- Running PostgreSQL and ClickHouse instances
+- Environment variables (e.g. in a .env file):
 
-## Usage
+```
+POSTGRES_DB=...
+POSTGRES_USER=...
+POSTGRES_PASSWORD=...
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
 
-```python
-from cca_db import PostgresClient, ClickHouseClient, PostgresAdmin, ClickHouseAdmin
-from cca_db import POSTGRES_TABLES, CLICKHOUSE_TABLES
-
-pg = PostgresClient()
-pg_admin = PostgresAdmin(pg)
-
-# Create a table if not exists
-pg_admin.create_table_if_not_exists("experts", POSTGRES_TABLES["experts"]) 
-
-ch = ClickHouseClient()
-ch_admin = ClickHouseAdmin(ch)
-ch_admin.create_database_if_not_exists("default")
-ch_admin.create_table_if_not_exists(
-    "default",
-    "selected_calls_details",
-    CLICKHOUSE_TABLES["selected_calls_details"],
-    order_by=["call_timestamp"],
-)
+CLICKHOUSE_DB=zaal
+CLICKHOUSE_HOST=localhost
+CLICKHOUSE_USER=default
+CLICKHOUSE_PASSWORD=
 ```
 
-## Migration notes
+Install deps
+------------
 
-- Import from `cca_db.*` instead of `dbs`, `dbs_admin`, and `tables_config`.
-- Class names changed:
-  - `Postgres` -> `PostgresClient`
-  - `ClickHouse` -> `ClickHouseClient`
-- Method renames and fixes:
-  - `create_table` -> `create_table_if_not_exists`
-  - `select` -> `select_rows`
-  - `filter` -> `filter_rows`
-  - `remove_table` -> `drop_table_if_exists`
-  - `show_tables` -> `list_tables`
-  - `add_call_detail` fixed and renamed to `insert_call_detail` to match the `calls_details` schema
-- ClickHouse schema in `config.py` now includes `subscriber_id` and `expert_id` to match insert usage.
+Using uv (recommended):
 
-## Environment
+```
+uv sync
+```
 
-Expects the following environment variables (e.g., via `.env`):
+Or pip:
 
-- PostgreSQL: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`, `POSTGRES_PORT`
-- ClickHouse: `CLICKHOUSE_DB`, `CLICKHOUSE_HOST`, `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`
+```
+python -m venv .venv && source .venv/bin/activate
+pip install -e .
+```
+
+Run the sample
+--------------
+
+```
+python sample_usage.py
+```
+
+What you’ll see
+---------------
+
+- Postgres and ClickHouse tables are (re)created
+- Data from data/ is inserted (ClickHouse rows include a created_at timestamp)
+- Results are printed in a readable format
+- An aggregation by sentiment class and a time-bucketed summary
+
+Code pointers
+-------------
+
+- src/admin.py: helper builders: _build_where_clause, _build_group_by_clause, _build_having_clause, _build_order_by_clause
+- sample_usage.py: end-to-end example including aggregation and time bucket

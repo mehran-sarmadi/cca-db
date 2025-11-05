@@ -54,33 +54,10 @@ class PostgresClient:
             cur.close()
         return rows
 
-    def execute_many(self, query: str, values: Iterable[Sequence[Any]]) -> None:
-        """Execute an INSERT with many rows using psycopg2.execute_values for performance."""
-        logger.info(f"Executing batch on PostgreSQL: {query[:100]}...")
-        cur = self.conn.cursor()
-        try:
-            execute_values(cur, query, values)
-        finally:
-            cur.close()
-
-    def execute_file(self, filepath: str) -> None:
-        logger.info(f"Executing SQL file: {filepath}")
-        with open(filepath, "r") as f:
-            sql = f.read()
-        cur = self.conn.cursor()
-        try:
-            cur.execute(sql)
-        finally:
-            cur.close()
-
     def commit(self) -> None:
         self.conn.commit()
 
-    def rollback(self) -> None:
-        self.conn.rollback()
 
-    def cursor(self):
-        return self.conn.cursor()
 
 
 class ClickHouseClient:
@@ -107,19 +84,6 @@ class ClickHouseClient:
         if params is not None:
             return self.client.execute(query, params)
         return self.client.execute(query)
-
-    def execute_many(self, query: str, values: Iterable[Sequence[Any]]):
-        logger.info(f"Executing batch on ClickHouse: {query[:100]}...")
-        self.client.execute(query, values)
-
-    def execute_file(self, filepath: str) -> None:
-        logger.info(f"Executing SQL file: {filepath}")
-        with open(filepath, "r") as f:
-            sql = f.read()
-        for stmt in sql.split(";"):
-            stmt = stmt.strip()
-            if stmt:
-                self.client.execute(stmt)
 
 
 if __name__ == "__main__":
