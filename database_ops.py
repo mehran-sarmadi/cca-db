@@ -213,6 +213,29 @@ class DataBaseOps():
         data = self.ch_client.execute(query)
         df = pd.DataFrame(data, columns=["time_group", "row_count"])
         return df
+    def create_table_if_not_exists(
+            self,
+            database_name: str,
+            table_name: str,
+            columns: Dict[str, str],
+            order_by: Optional[List[str]] = None,
+            partition_by: Optional[str] = None,
+            engine: str = "MergeTree()",
+            ttl: Optional[str] = None,
+        ) -> None:
+            cols_def = ", ".join([f"{col} {dtype}" for col, dtype in columns.items()])
+            clauses: List[str] = [f"ENGINE = {engine}"]
+            if partition_by:
+                clauses.append(f"PARTITION BY {partition_by}")
+            if order_by:
+                clauses.append("ORDER BY (" + ", ".join(order_by) + ")")
+            else:
+                clauses.append("ORDER BY tuple()")
+            if ttl:
+                clauses.append(f"TTL {ttl}")
+            engine_clause = " ".join(clauses)
+            sql = f"CREATE TABLE IF NOT EXISTS {database_name}.{table_name} ({cols_def}) {engine_clause}"
+            self.ch_client.execute(sql)
 
 
 if __name__ == "__main__":
@@ -255,30 +278,6 @@ if __name__ == "__main__":
             all_data.append(data)
         return all_data
 
-    def create_table_if_not_exists(
-            client,
-            database_name: str,
-            table_name: str,
-            columns: Dict[str, str],
-            order_by: Optional[List[str]] = None,
-            partition_by: Optional[str] = None,
-            engine: str = "MergeTree()",
-            ttl: Optional[str] = None,
-        ) -> None:
-            cols_def = ", ".join([f"{col} {dtype}" for col, dtype in columns.items()])
-            clauses: List[str] = [f"ENGINE = {engine}"]
-            if partition_by:
-                clauses.append(f"PARTITION BY {partition_by}")
-            if order_by:
-                clauses.append("ORDER BY (" + ", ".join(order_by) + ")")
-            else:
-                clauses.append("ORDER BY tuple()")
-            if ttl:
-                clauses.append(f"TTL {ttl}")
-            engine_clause = " ".join(clauses)
-            sql = f"CREATE TABLE IF NOT EXISTS {database_name}.{table_name} ({cols_def}) {engine_clause}"
-            client.execute(sql)
-
 
     CLICKHOUSE_TABLES = {
     "morteza_test": {
@@ -306,7 +305,7 @@ if __name__ == "__main__":
     table_name = "morteza_test"
 
     database_operator.ch_client.execute(f"DROP TABLE IF EXISTS {table_name};")
-    create_table_if_not_exists(database_operator.ch_client, database, table_name, CLICKHOUSE_TABLES[table_name])
+    database_operator.create_table_if_not_exists(database, table_name, CLICKHOUSE_TABLES[table_name])
 
 
     # Start time: 7 days ago from now
