@@ -85,7 +85,8 @@ class DataBaseOps():
     def get_subcategory_counts_pivot(self, table, column, start_date, end_date, freq):
         """
         Returns a pivoted DataFrame where:
-        - rows = subcategory names (e.g., c3_1, c3_2, c4_1)
+        - rows = subcategories (e.g. c3_1, c3_2, c4_1)
+        - includes a 'category' column showing the parent key (e.g. c3, c4)
         - columns = time intervals
         - values = counts
         """
@@ -109,44 +110,58 @@ class DataBaseOps():
                             key ->
                                 CASE
                                     WHEN JSONType(JSONExtractRaw({column}, key)) = 'Array' THEN
-                                        arrayMap(x -> x, JSONExtractArrayRaw({column}, key))
+                                        arrayMap(x -> (key, x), JSONExtractArrayRaw({column}, key))
                                     WHEN JSONType(JSONExtractRaw({column}, key)) = 'Object' THEN
-                                        JSONExtractKeys(JSONExtractRaw({column}, key))
+                                        arrayMap(x -> (key, x), JSONExtractKeys(JSONExtractRaw({column}, key)))
                                     ELSE
-                                        [key]
+                                        [(key, key)]
                                 END,
                             JSONExtractKeys({column})
                         )
                     )
-                ) AS subcategory,
+                ) AS kv_pair,
                 count() AS cnt
             FROM {table}
             WHERE created_at >= toDateTime('{start_date}')
             AND created_at < toDateTime('{end_date}')
-            GROUP BY time_group, subcategory
-            ORDER BY time_group, subcategory
+            GROUP BY time_group, kv_pair
+            ORDER BY time_group, kv_pair
         """
 
         data = self.ch_client.execute(query)
 
-        df = pd.DataFrame(data, columns=["time_group", "subcategory", "count"])
+        # Each kv_pair is a tuple (category, subcategory)
+        df = pd.DataFrame(data, columns=["time_group", "kv_pair", "count"])
+
+        # Split kv_pair into separate columns
+        df[["category", "subcategory"]] = pd.DataFrame(df["kv_pair"].tolist(), index=df.index)
+
+        # Pivot so rows = subcategory, columns = time intervals
         df_pivot = df.pivot_table(
-            index="subcategory",
+            index=["category", "subcategory"],
             columns="time_group",
             values="count",
-            fill_value=0
+            fill_value=0,
         )
 
         df_pivot = df_pivot.reindex(sorted(df_pivot.columns), axis=1)
         return df_pivot
 
 
+
     def counts_per_timestep(self, table: str, columns: list, from_days_before: int, freq):
         end_date = datetime.now()
         start_date = end_date - timedelta(days=from_days_before)
-        dfs_dic = {"category": None, "subcategory": None, "campaign": None, "service": None}
+        dfs_dic = {"all": None, "category": None, "subcategory": None, "campaign": None, "service": None}
         for column in columns:
-            if column == "subcategory":
+            if column == "all":
+                df = self.get_row_counts_per_timestep(
+                    table,
+                    start_date,
+                    end_date,
+                    freq
+                )
+            elif column == "subcategory":
                 df = self.get_subcategory_counts_pivot(
                     table,
                     "category",
@@ -164,9 +179,41 @@ class DataBaseOps():
                 )
             dfs_dic[column] = df
         return dfs_dic
-
-
     
+    def get_row_counts_per_timestep(self, table: str, start_date, end_date, freq: str):
+        """
+        Returns a DataFrame with total row counts per time step.
+        Example:
+            time_group              count
+            2025-11-01 00:00:00     120
+            2025-11-01 01:00:00     95
+        """
+
+        interval_unit = 'HOUR' if freq == 'H' else 'DAY'
+
+        def fmt(dt):
+            if isinstance(dt, datetime):
+                return dt.strftime("%Y-%m-%d %H:%M:%S")
+            return str(dt).replace("T", " ").split(".")[0]
+
+        start_date = fmt(start_date)
+        end_date = fmt(end_date)
+
+        query = f"""
+            SELECT
+                toStartOfInterval(created_at, INTERVAL 1 {interval_unit}) AS time_group,
+                count(*) AS row_count
+            FROM {table}
+            WHERE created_at >= toDateTime('{start_date}')
+            AND created_at < toDateTime('{end_date}')
+            GROUP BY time_group
+            ORDER BY time_group
+        """
+
+        data = self.ch_client.execute(query)
+        df = pd.DataFrame(data, columns=["time_group", "row_count"])
+        return df
+
 
 if __name__ == "__main__":
 
@@ -174,33 +221,36 @@ if __name__ == "__main__":
     load_dotenv()
 
     def build_mock_data(num_data=700,
-                        num_categories=10,
-                        num_campaigns=10,
-                        num_services=10,
+                        num_categories=3,
+                        num_campaigns=3,
+                        num_services=3,
                         max_random_sub=5):
         all_data = []
         for _ in range(num_data):
             data = {"category": {}, "campaign": {}, "service": {}}
 
             # categories: c1..cN each with specified number of subcategories (or random)
-            i = random.randint(1, num_categories)
-            key = f"c{i}"
-            n = random.randint(0, max_random_sub)
-            subs = [f"c{i}_{j}" for j in range(1, n + 1)]
-            data["category"][key] = subs
+            for _ in range(random.randint(1, 3)):
+                i = random.randint(1, num_categories)
+                key = f"c{i}"
+                n = random.randint(0, max_random_sub)
+                subs = [f"c{i}_{j}" for j in range(1, n + 1)]
+                data["category"][key] = subs
 
             # campaigns: cmp1..cmpN, optional sub-items (or random)
-            i = random.randint(1, num_campaigns)
-            key = f"cmp{i}"
-            n = random.randint(0, max_random_sub)
-            subs = [f"cmp{i}_{j}" for j in range(1, n + 1)]
-            data["campaign"][key] = subs
+            for _ in range(random.randint(1, 3)):
+                i = random.randint(1, num_campaigns)
+                key = f"cmp{i}"
+                n = random.randint(0, max_random_sub)
+                subs = [f"cmp{i}_{j}" for j in range(1, n + 1)]
+                data["campaign"][key] = subs
 
-            i = random.randint(1, num_services)
-            key = f"srv{i}"
-            n = random.randint(0, max_random_sub)
-            subs = [f"srv{i}_{j}" for j in range(1, n + 1)]
-            data["service"][key] = subs
+            for _ in range(random.randint(1, 3)):
+                i = random.randint(1, num_services)
+                key = f"srv{i}"
+                n = random.randint(0, max_random_sub)
+                subs = [f"srv{i}_{j}" for j in range(1, n + 1)]
+                data["service"][key] = subs
 
             all_data.append(data)
         return all_data
@@ -260,7 +310,7 @@ if __name__ == "__main__":
 
 
     # Start time: 7 days ago from now
-    all_data = build_mock_data(700)
+    all_data = build_mock_data(6)
     now = datetime.now()
     start_time = now - timedelta(days=7)
 
@@ -271,16 +321,18 @@ if __name__ == "__main__":
         # Each subsequent row is 15 minutes apart
         created_at = start_time + timedelta(minutes=15 * idx)
         row["created_at"] = created_at.strftime("%Y-%m-%d %H:%M:%S")
-
+        print(base_row)
+        print(created_at)
         database_operator.insert_row(table_name, row)
 
 
     dfs_dic = database_operator.counts_per_timestep(
         table_name,
-        ["category", "subcategory", "campaign", "service"],
-        from_days_before=7,
+        ["all", "category", "subcategory", "campaign", "service"],
+        from_days_before=8,
         freq='D'
     )
+
 
     for key, df in dfs_dic.items():
         print(f"\n\nPivot table for {key}:\n")
