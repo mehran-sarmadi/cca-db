@@ -8,7 +8,7 @@ from clickhouse_driver import Client as CHClient
 import os
 import pandas as pd
 import random
-
+from tqdm import tqdm
 
 class DataBaseOps():
     def __init__ (self, config) -> None:
@@ -42,6 +42,50 @@ class DataBaseOps():
                 else:
                     vals.append(str(val))
             sql = f"INSERT INTO {table} ({', '.join(cols)}) VALUES ({', '.join(vals)})"
+            self.ch_client.execute(sql)
+
+    def insert_batch(self, table: str, rows: list[Dict[str, Any]], batch_size: int = 1000) -> None:
+        """
+        Insert multiple rows in batches for better performance.
+        
+        Args:
+            table: The table name to insert into
+            rows: List of dictionaries representing rows to insert
+            batch_size: Number of rows to insert per batch (default 1000)
+        """
+        if not rows:
+            return
+        
+        # Process rows in batches
+        for batch_start in tqdm(range(0, len(rows), batch_size), total=(len(rows) + batch_size - 1) // batch_size):
+            batch_end = min(batch_start + batch_size, len(rows))
+            batch = rows[batch_start:batch_end]
+            
+            # Get columns from first row
+            cols = list(batch[0].keys())
+            
+            # Build VALUES clause for all rows in batch
+            values_clauses = []
+            for row in batch:
+                vals = []
+                for c in cols:
+                    val = row[c]
+                    # Convert values to ClickHouse-compatible format
+                    if isinstance(val, bool):
+                        vals.append("1" if val else "0")
+                    elif isinstance(val, str):
+                        # Escape single quotes in strings
+                        escaped = val.replace("'", "\\'")
+                        vals.append(f"'{escaped}'")
+                    elif val is None:
+                        vals.append("NULL")
+                    elif isinstance(val, (dict, list)):
+                        vals.append(f"'{json.dumps(val)}'")
+                    else:
+                        vals.append(str(val))
+                values_clauses.append(f"({', '.join(vals)})")
+            
+            sql = f"INSERT INTO {table} ({', '.join(cols)}) VALUES {', '.join(values_clauses)}"
             self.ch_client.execute(sql)
 
     def get_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
@@ -222,12 +266,14 @@ if __name__ == "__main__":
     load_dotenv()
 
     def build_mock_data(num_data=700,
-                        num_categories=3,
-                        num_campaigns=3,
-                        num_services=3,
+                        num_categories=15,
+                        num_campaigns=5,
+                        num_services=5,
                         max_random_sub=5):
+        now = datetime.now()
+        start_time = now - timedelta(days=10)
         all_data = []
-        for _ in range(num_data):
+        for _ in tqdm(range(num_data), total=num_data):
             data = {"loc_id": None,"category": {}, "campaign": {}, "service": {}}
 
             # categories: c1..cN each with specified number of subcategories (or random)
@@ -255,12 +301,16 @@ if __name__ == "__main__":
             
             data["loc_id"] = 1000 + random.randint(1, 10)
 
+
+            created_at = start_time + timedelta(minutes=random.randint(0, 14400))
+            data["created_at"] = created_at.strftime("%Y-%m-%d %H:%M:%S")
+
             all_data.append(data)
         return all_data
 
 
     CLICKHOUSE_TABLES = {
-    "morteza_test": {
+    "superset_test": {
         "id": "Int64",
         "loc_id": "Int64",
         "category": "String",
@@ -283,35 +333,23 @@ if __name__ == "__main__":
 
     
     database = "zaal"
-    table_name = "morteza_test"
+    table_name = "superset_test"
 
     database_operator.ch_client.execute(f"DROP TABLE IF EXISTS {table_name};")
     database_operator.create_table_if_not_exists(database, table_name, CLICKHOUSE_TABLES[table_name])
 
 
-    # Start time: 7 days ago from now
-    all_data = build_mock_data(20)
-    now = datetime.now()
-    start_time = now - timedelta(days=7)
+    # Start time: 10 days ago from now
+    all_data = build_mock_data(400000)
 
-    for idx, base_row in enumerate(all_data):
-        print(f"Inserting row {idx + 1} into ClickHouse…")
-        row = dict(base_row)
-
-        # Each subsequent row is 15 minutes apart
-        created_at = start_time + timedelta(minutes=15 * idx)
-        row["created_at"] = created_at.strftime("%Y-%m-%d %H:%M:%S")
-        print(base_row)
-        print(created_at)
-        database_operator.insert_row(table_name, row)
-
+    database_operator.insert_batch(table_name, all_data)
 
     dfs_dic = database_operator.counts_per_timestep(
         table_name,
         ["all", "category", "subcategory", "campaign", "service"],
         from_days_before=8,
         freq='D',
-        loc_id=1003
+        # loc_id=1003
     )
 
 

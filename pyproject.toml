@@ -8,4 +8,5 @@ dependencies = [
     "clickhouse-driver>=0.2.9",
     "dotenv>=0.9.9",
     "pandas>=2.3.3",
+    "tqdm>=4.67.1",
 ]
