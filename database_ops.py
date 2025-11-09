@@ -44,9 +44,7 @@ class DataBaseOps():
             sql = f"INSERT INTO {table} ({', '.join(cols)}) VALUES ({', '.join(vals)})"
             self.ch_client.execute(sql)
 
-
-
-    def get_counts_pivot(self, table, column, start_date, end_date, freq):
+    def get_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
         interval_unit = 'HOUR' if freq == 'H' else 'DAY'
 
         def fmt(dt):
@@ -57,7 +55,8 @@ class DataBaseOps():
         start_date = fmt(start_date)
         end_date = fmt(end_date)
 
-        # --- Step 1: Query ClickHouse ---
+        loc_filter = f"AND loc_id = {loc_id}" if loc_id is not None else ""
+
         query = f"""
             SELECT
                 toStartOfInterval(created_at, INTERVAL 1 {interval_unit}) AS time_group,
@@ -66,6 +65,7 @@ class DataBaseOps():
             FROM {table}
             WHERE created_at >= toDateTime('{start_date}')
             AND created_at < toDateTime('{end_date}')
+            {loc_filter}
             GROUP BY time_group, category_key
             ORDER BY time_group, category_key
         """
@@ -73,24 +73,11 @@ class DataBaseOps():
         data = self.ch_client.execute(query)
 
         df = pd.DataFrame(data, columns=["time_group", "category", "count"])
-        df_pivot = df.pivot_table(
-            index="category",
-            columns="time_group",
-            values="count",
-            fill_value=0,
-        )
+        df_pivot = df.pivot_table(index="category", columns="time_group", values="count", fill_value=0)
         df_pivot = df_pivot.reindex(sorted(df_pivot.columns), axis=1)
         return df_pivot
 
-    def get_subcategory_counts_pivot(self, table, column, start_date, end_date, freq):
-        """
-        Returns a pivoted DataFrame where:
-        - rows = subcategories (e.g. c3_1, c3_2, c4_1)
-        - includes a 'category' column showing the parent key (e.g. c3, c4)
-        - columns = time intervals
-        - values = counts
-        """
-
+    def get_subcategory_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
         interval_unit = 'HOUR' if freq == 'H' else 'DAY'
 
         def fmt(dt):
@@ -100,6 +87,8 @@ class DataBaseOps():
 
         start_date = fmt(start_date)
         end_date = fmt(end_date)
+
+        loc_filter = f"AND loc_id = {loc_id}" if loc_id is not None else ""
 
         query = f"""
             SELECT
@@ -124,32 +113,23 @@ class DataBaseOps():
             FROM {table}
             WHERE created_at >= toDateTime('{start_date}')
             AND created_at < toDateTime('{end_date}')
+            {loc_filter}
             GROUP BY time_group, kv_pair
             ORDER BY time_group, kv_pair
         """
 
         data = self.ch_client.execute(query)
-
-        # Each kv_pair is a tuple (category, subcategory)
         df = pd.DataFrame(data, columns=["time_group", "kv_pair", "count"])
-
-        # Split kv_pair into separate columns
-        df[["category", "subcategory"]] = pd.DataFrame(df["kv_pair"].tolist(), index=df.index)
-
-        # Pivot so rows = subcategory, columns = time intervals
-        df_pivot = df.pivot_table(
-            index=["category", "subcategory"],
-            columns="time_group",
-            values="count",
-            fill_value=0,
-        )
-
+        # Safely unpack kv_pair tuples into category and subcategory columns
+        kv_df = pd.DataFrame(df["kv_pair"].tolist(), columns=["category", "subcategory"])
+        df[["category", "subcategory"]] = kv_df
+        df_pivot = df.pivot_table(index=["category", "subcategory"], columns="time_group", values="count", fill_value=0)
         df_pivot = df_pivot.reindex(sorted(df_pivot.columns), axis=1)
         return df_pivot
 
 
 
-    def counts_per_timestep(self, table: str, columns: list, from_days_before: int, freq):
+    def counts_per_timestep(self, table: str, columns: list, from_days_before: int, freq, loc_id: Optional[int] = None) -> Dict[str, pd.DataFrame]:
         end_date = datetime.now()
         start_date = end_date - timedelta(days=from_days_before)
         dfs_dic = {"all": None, "category": None, "subcategory": None, "campaign": None, "service": None}
@@ -159,7 +139,8 @@ class DataBaseOps():
                     table,
                     start_date,
                     end_date,
-                    freq
+                    freq,
+                    loc_id
                 )
             elif column == "subcategory":
                 df = self.get_subcategory_counts_pivot(
@@ -167,7 +148,8 @@ class DataBaseOps():
                     "category",
                     start_date,
                     end_date,
-                    freq
+                    freq,
+                    loc_id
                 )
             else:
                 df = self.get_counts_pivot(
@@ -175,20 +157,13 @@ class DataBaseOps():
                     column,
                     start_date,
                     end_date,
-                    freq
+                    freq,
+                    loc_id
                 )
             dfs_dic[column] = df
         return dfs_dic
-    
-    def get_row_counts_per_timestep(self, table: str, start_date, end_date, freq: str):
-        """
-        Returns a DataFrame with total row counts per time step.
-        Example:
-            time_group              count
-            2025-11-01 00:00:00     120
-            2025-11-01 01:00:00     95
-        """
 
+    def get_row_counts_per_timestep(self, table: str, start_date, end_date, freq: str, loc_id: Optional[int] = None):
         interval_unit = 'HOUR' if freq == 'H' else 'DAY'
 
         def fmt(dt):
@@ -199,6 +174,8 @@ class DataBaseOps():
         start_date = fmt(start_date)
         end_date = fmt(end_date)
 
+        loc_filter = f"AND loc_id = {loc_id}" if loc_id is not None else ""
+
         query = f"""
             SELECT
                 toStartOfInterval(created_at, INTERVAL 1 {interval_unit}) AS time_group,
@@ -206,6 +183,7 @@ class DataBaseOps():
             FROM {table}
             WHERE created_at >= toDateTime('{start_date}')
             AND created_at < toDateTime('{end_date}')
+            {loc_filter}
             GROUP BY time_group
             ORDER BY time_group
         """
@@ -250,7 +228,7 @@ if __name__ == "__main__":
                         max_random_sub=5):
         all_data = []
         for _ in range(num_data):
-            data = {"category": {}, "campaign": {}, "service": {}}
+            data = {"loc_id": None,"category": {}, "campaign": {}, "service": {}}
 
             # categories: c1..cN each with specified number of subcategories (or random)
             for _ in range(random.randint(1, 3)):
@@ -274,6 +252,8 @@ if __name__ == "__main__":
                 n = random.randint(0, max_random_sub)
                 subs = [f"srv{i}_{j}" for j in range(1, n + 1)]
                 data["service"][key] = subs
+            
+            data["loc_id"] = 1000 + random.randint(1, 10)
 
             all_data.append(data)
         return all_data
@@ -282,6 +262,7 @@ if __name__ == "__main__":
     CLICKHOUSE_TABLES = {
     "morteza_test": {
         "id": "Int64",
+        "loc_id": "Int64",
         "category": "String",
         "campaign": "String",
         "service": "String",
@@ -309,7 +290,7 @@ if __name__ == "__main__":
 
 
     # Start time: 7 days ago from now
-    all_data = build_mock_data(6)
+    all_data = build_mock_data(20)
     now = datetime.now()
     start_time = now - timedelta(days=7)
 
@@ -329,7 +310,8 @@ if __name__ == "__main__":
         table_name,
         ["all", "category", "subcategory", "campaign", "service"],
         from_days_before=8,
-        freq='D'
+        freq='D',
+        loc_id=1003
     )
 
 
