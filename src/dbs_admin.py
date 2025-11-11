@@ -442,7 +442,7 @@ if __name__ == "__main__":
         # pg_admin.remove_table(table[0])
         print(table[0])
         print()
-        print(pg_admin.select(table[0]))
+        # print(pg_admin.select(table[0]))
         print("-----")
 
     print("clickhouse tables:")
@@ -451,7 +451,7 @@ if __name__ == "__main__":
         # ch_admin.remove_table(table[0])
         print(table[0])
         print()
-        print(ch_admin.select(table[0]))
+        # print(ch_admin.select(table[0]))
         print("-----")
 
     # # see all tables and rows
