@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ast import List
-from typing import Dict, Optional, Any
+import re
+from typing import List, Dict, Optional, Any, Tuple
 import json
 from datetime import datetime, timedelta
 from clickhouse_driver import Client as CHClient
@@ -9,6 +9,31 @@ import os
 import pandas as pd
 import random
 from tqdm import tqdm
+
+
+def parse_interval(interval_str: str) -> Tuple[int, str]:
+    """Parse interval like '5m', '10min', '4h', '2d', or single-letter 'H','D','M' into (value, unit).
+
+    Returns:
+        (value, unit) where unit is one of 'MINUTE', 'HOUR', 'DAY'.
+    """
+    if not isinstance(interval_str, str):
+        raise ValueError(f"Interval must be a string, got {type(interval_str)}")
+    s = interval_str.strip()
+    # allow optional number (defaults to 1) and units like m|min|minute(s), h|hour(s), d|day(s)
+    match = re.match(r"(?:(\d+)\s*)?(m|min|minute|minutes|h|hour|hours|d|day|days)$", s, re.I)
+    if not match:
+        raise ValueError(f"Invalid interval format: {interval_str}")
+    value_str = match.group(1)
+    value = int(value_str) if value_str is not None else 1
+    unit_raw = match.group(2).lower()
+    if unit_raw.startswith("m"):
+        return value, "MINUTE"
+    if unit_raw.startswith("h"):
+        return value, "HOUR"
+    if unit_raw.startswith("d"):
+        return value, "DAY"
+    raise ValueError(f"Unsupported interval unit: {unit_raw}")
 
 class DataBaseOps():
     def __init__ (self, config) -> None:
@@ -89,7 +114,7 @@ class DataBaseOps():
             self.ch_client.execute(sql)
 
     def get_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
-        interval_unit = 'HOUR' if freq == 'H' else 'DAY'
+        interval_value, interval_unit = parse_interval(freq)
 
         def fmt(dt):
             if isinstance(dt, datetime):
@@ -103,7 +128,7 @@ class DataBaseOps():
 
         query = f"""
             SELECT
-                toStartOfInterval(created_at, INTERVAL 1 {interval_unit}) AS time_group,
+                toStartOfInterval(created_at, INTERVAL {interval_value} {interval_unit}) AS time_group,
                 arrayJoin(JSONExtractKeys({column})) AS category_key,
                 count() AS cnt
             FROM {table}
@@ -122,7 +147,7 @@ class DataBaseOps():
         return df_pivot
 
     def get_subcategory_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
-        interval_unit = 'HOUR' if freq == 'H' else 'DAY'
+        interval_value, interval_unit = parse_interval(freq)
 
         def fmt(dt):
             if isinstance(dt, datetime):
@@ -136,7 +161,7 @@ class DataBaseOps():
 
         query = f"""
             SELECT
-                toStartOfInterval(created_at, INTERVAL 1 {interval_unit}) AS time_group,
+                toStartOfInterval(created_at, INTERVAL {interval_value} {interval_unit}) AS time_group,
                 arrayJoin(
                     arrayFlatten(
                         arrayMap(
@@ -173,9 +198,28 @@ class DataBaseOps():
 
 
 
-    def counts_per_timestep(self, table: str, columns: list, from_days_before: int, freq, loc_id: Optional[int] = None) -> Dict[str, pd.DataFrame]:
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=from_days_before)
+    def counts_per_timestep(self, table: str, columns: list, from_time_before: str, freq, loc_id: Optional[int] = None) -> Dict[str, pd.DataFrame]:
+        """Return dictionary of pivot DataFrames aggregated per time step.
+
+        from_time_before can be a flexible interval string like '100m', '4h', '10d'.
+        For backward compatibility, callers may still pass an int (treated as days).
+        """
+        # Backwards-compatible: if caller passed an int positional (old API), convert it to days string
+        if isinstance(from_time_before, int):
+            from_time_before = f"{from_time_before}d"
+
+        now = datetime.now()
+        value, unit = parse_interval(from_time_before)
+        if unit == "MINUTE":
+            start_date = now - timedelta(minutes=value)
+        elif unit == "HOUR":
+            start_date = now - timedelta(hours=value)
+        elif unit == "DAY":
+            start_date = now - timedelta(days=value)
+        else:
+            raise ValueError(f"Unsupported time unit: {unit}")
+
+        end_date = now
         dfs_dic = {"all": None, "category": None, "subcategory": None, "campaign": None, "service": None}
         for column in columns:
             if column == "all":
@@ -208,7 +252,7 @@ class DataBaseOps():
         return dfs_dic
 
     def get_row_counts_per_timestep(self, table: str, start_date, end_date, freq: str, loc_id: Optional[int] = None):
-        interval_unit = 'HOUR' if freq == 'H' else 'DAY'
+        interval_value, interval_unit = parse_interval(freq)
 
         def fmt(dt):
             if isinstance(dt, datetime):
@@ -222,7 +266,7 @@ class DataBaseOps():
 
         query = f"""
             SELECT
-                toStartOfInterval(created_at, INTERVAL 1 {interval_unit}) AS time_group,
+                toStartOfInterval(created_at, INTERVAL {interval_value} {interval_unit}) AS time_group,
                 count(*) AS row_count
             FROM {table}
             WHERE created_at >= toDateTime('{start_date}')
@@ -347,7 +391,7 @@ if __name__ == "__main__":
     dfs_dic = database_operator.counts_per_timestep(
         table_name,
         ["all", "category", "subcategory", "campaign", "service"],
-        from_days_before=8,
+        from_time_before="8d",
         freq='D',
         # loc_id=1003
     )
