@@ -42,7 +42,7 @@ def build_mock_data(num_data, num_categories=10, num_subcategories=3):
         }
     ]
     now = datetime.now()
-    start_time = now - timedelta(days=10)
+    start_time = now - timedelta(days=90)
     all_data = []
 
     for _ in tqdm(range(num_data), total=num_data):
@@ -122,7 +122,7 @@ def transform_to_clickhouse(mock_data):
 
     transformed = []
 
-    for record in mock_data:
+    for record in tqdm(mock_data):
         # Sentiment info
         user_sentiment = record["sentiment_analysis"]["subscriber"]["class"]
         agent_sentiment = record["sentiment_analysis"]["expert"]["class"]
@@ -149,10 +149,10 @@ def transform_to_clickhouse(mock_data):
         user_satisfaction = record["satisfaction"]["class"]
 
         # Categories & subcategories
-        categories = record["call_category_existing"] + record["call_category_new"]
-        subcategories = [s["subcategory"] for s in record["call_subcategory_existing"]] + [
-            s["subcategory"] for s in record["call_subcategory_new"]
-        ]
+        # categories = record["call_category_existing"] + record["call_category_new"]
+        # subcategories = [s["subcategory"] for s in record["call_subcategory_existing"]] + [
+        #     s["subcategory"] for s in record["call_subcategory_new"]
+        # ]
 
         # Dict of category → array of subcategories (for JSON extraction in ClickHouse)
         # Build a dict where each category maps to an array of its subcategories
@@ -192,8 +192,8 @@ def transform_to_clickhouse(mock_data):
             "agent_reference": agent_reference,
             "agent_reference_meta": agent_reference_meta,
             "user_satisfaction": user_satisfaction,
-            "categories": categories,
-            "subcategories": subcategories,
+            # "categories": categories,
+            # "subcategories": subcategories,
             # Store as a native dict so it maps to ClickHouse Map(String, Array(String))
             "category_subcategory_dict": category_subcategory_dict,
             "call_reason": call_reason,
@@ -225,8 +225,8 @@ CLICKHOUSE_TABLES = {
     "agent_reference": "LowCardinality(String)",
     "agent_reference_meta": "Array(String)",
     "user_satisfaction": "LowCardinality(String)",
-    "categories": "Array(String)",
-    "subcategories": "Array(String)",
+    # "categories": "Array(String)",
+    # "subcategories": "Array(String)",
     "category_subcategory_dict": "Map(String, Array(String))",
     "call_reason": "String",
     "call_summary": "String",
@@ -253,12 +253,12 @@ database_operator = ClickHouseDBOps(ch_client_config)
 database = "zaal"
 table_name = "superset_test_final_schema"
 
-database_operator.ch_client.execute(f"DROP TABLE IF EXISTS {table_name};")
-database_operator.create_table_if_not_exists(database, table_name, CLICKHOUSE_TABLES[table_name])
+# database_operator.ch_client.execute(f"DROP TABLE IF EXISTS {table_name};")
+# database_operator.create_table_if_not_exists(database, table_name, CLICKHOUSE_TABLES[table_name])
 
 
 # Start time: 10 days ago from now
-all_data = build_mock_data(1000)
+all_data = build_mock_data(3000000)
 transformed_all_data = transform_to_clickhouse(all_data)
 
 # print("Print transformed data:")
@@ -288,9 +288,9 @@ print(f"Time taken for counts_per_timestep: {t2 - t1} seconds")
 
 
 
-# for key, df in dfs_dic.items():
-#     print(f"\n\nPivot table for {key}:\n")
-#     print(df)
+for key, df in dfs_dic.items():
+    print(f"\n\nPivot table for {key}:\n")
+    print(df)
 
 
 t1 = time.time()
@@ -299,14 +299,13 @@ dfs_dic = database_operator.counts_per_timestep_all_locs(
     ["all", "categories", "subcategories"],
     from_time_before="4d",
     freq='d',
-    # loc_id="1003"
 )
 t2 = time.time()
 print(f"Time taken for counts_per_timestep: {t2 - t1} seconds")
 
-# for key, df in dfs_dic.items():
-#     print(f"\n\nPivot table for {key}:\n")
-#     print(df)
+for key, df in dfs_dic.items():
+    print(f"\n\nPivot table for {key}:\n")
+    print(df)
 
 
 # # Access per-location breakdowns easily:

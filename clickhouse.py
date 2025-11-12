@@ -9,7 +9,7 @@ import os
 import pandas as pd
 import random
 from tqdm import tqdm
-
+import time
 
 class ClickHouseDBOps():
 
@@ -108,15 +108,8 @@ class ClickHouseDBOps():
             self.ch_client.execute(sql, rows_to_insert)
 
     def counts_per_timestep(self, table: str, columns: list[str], from_time_before: int | str | datetime, freq: str, loc_id: Optional[int] = None, end_date: Optional[datetime] = None) -> Dict[str, pd.DataFrame]:
-        """Return dictionary of pivot DataFrames aggregated per time step.
+        """Return dictionary of pivot DataFrames aggregated per time step."""
 
-        from_time_before:
-          - int -> days back (legacy)
-          - str interval like '100m', '4h', '10d'
-          - datetime -> explicit start time
-        end_date:
-          - Optional datetime for explicit end time (defaults to now)
-        """
         if not columns:
             return {}
 
@@ -137,28 +130,28 @@ class ClickHouseDBOps():
             start_date = end_date - delta_map[unit]
 
         result = {
-            "categories": self.get_category_counts_pivot(table, "categories", start_date, end_date, freq, loc_id),
+            "categories": self.get_category_counts_pivot(table, "category_subcategory_dict", start_date, end_date, freq, loc_id),
             "subcategories": self.get_subcategory_counts_pivot(table, "category_subcategory_dict", start_date, end_date, freq, loc_id),
             "all": self.get_row_counts_per_timestep(table, start_date, end_date, freq, loc_id),
         }
 
         return result
 
-
-
     def get_category_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
         interval_value, interval_unit = self.parse_interval(freq)
+
         def fmt(dt):
             if isinstance(dt, datetime):
                 return dt.strftime("%Y-%m-%d %H:%M:%S")
             return str(dt).replace("T", " ").split(".")[0]
-        start_date = fmt(start_date)
-        end_date = fmt(end_date)
+
+        start_date, end_date = fmt(start_date), fmt(end_date)
         loc_filter = f"AND location_id = {loc_id}" if loc_id is not None else ""
+
         query = f"""
             SELECT
                 toStartOfInterval(created_at, INTERVAL {interval_value} {interval_unit}) AS time_group,
-                arrayJoin({column}) AS category,
+                arrayJoin(mapKeys({column})) AS category,
                 count() AS cnt
             FROM {table}
             WHERE created_at >= toDateTime('{start_date}')
@@ -175,6 +168,7 @@ class ClickHouseDBOps():
         df_pivot = df_pivot.reindex(sorted(df_pivot.columns), axis=1)
         df_pivot.reset_index(inplace=True)
         return df_pivot
+
 
     def get_subcategory_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
         interval_value, interval_unit = self.parse_interval(freq)
@@ -203,7 +197,10 @@ class ClickHouseDBOps():
             GROUP BY time_group, kv_pair
             ORDER BY time_group, kv_pair
         """
+        # t1 = time.time()
         data = self.ch_client.execute(query)
+        # t2 = time.time()
+        # print(f"Time taken for subcategory query: {t2 - t1} seconds")
         df = pd.DataFrame(data, columns=["time_group", "kv_pair", "count"])
         if df.empty:
             return pd.DataFrame()
@@ -235,7 +232,10 @@ class ClickHouseDBOps():
             GROUP BY time_group
             ORDER BY time_group
         """
+        # t1 = time.time()
         data = self.ch_client.execute(query)
+        # t2 = time.time()
+        # print(f"Time taken for row counts query: {t2 - t1} seconds")
         df = pd.DataFrame(data, columns=["time_group", "count"])
         return df
 
@@ -280,7 +280,7 @@ class ClickHouseDBOps():
         if not columns:
             return {}
 
-        # Resolve start/end time (same logic as before)
+        # Resolve start/end time
         if isinstance(from_time_before, datetime):
             start_date = from_time_before
             end_date = end_date or datetime.now()
@@ -295,24 +295,31 @@ class ClickHouseDBOps():
             }
             end_date = end_date or datetime.now()
             start_date = end_date - delta_map[unit]
-        result ={
-        "categories" : self.get_category_counts_pivot_all_locs(table, "categories", start_date, end_date, freq),
-        "subcategories": self.get_subcategory_counts_pivot_all_locs(table, "category_subcategory_dict", start_date, end_date, freq),
-        "all": self.get_row_counts_per_timestep_all_locs(table, start_date, end_date, freq)
+
+        result = {
+            "categories": self.get_category_counts_pivot_all_locs(table, "category_subcategory_dict", start_date, end_date, freq),
+            "subcategories": self.get_subcategory_counts_pivot_all_locs(table, "category_subcategory_dict", start_date, end_date, freq),
+            "all": self.get_row_counts_per_timestep_all_locs(table, start_date, end_date, freq)
         }
+
         return result
+
 
 
     def get_category_counts_pivot_all_locs(self, table, column, start_date, end_date, freq):
         interval_value, interval_unit = self.parse_interval(freq)
+
         def fmt(dt):
-            return dt.strftime("%Y-%m-%d %H:%M:%S") if isinstance(dt, datetime) else str(dt).replace("T", " ").split(".")[0]
+            if isinstance(dt, datetime):
+                return dt.strftime("%Y-%m-%d %H:%M:%S")
+            return str(dt).replace("T", " ").split(".")[0]
+
         start_date, end_date = fmt(start_date), fmt(end_date)
 
         query = f"""
             SELECT
                 toStartOfInterval(created_at, INTERVAL {interval_value} {interval_unit}) AS time_group,
-                arrayJoin({column}) AS category,
+                arrayJoin(mapKeys({column})) AS category,
                 location_id,
                 count() AS cnt
             FROM {table}
@@ -329,6 +336,7 @@ class ClickHouseDBOps():
         df_pivot = df_pivot.reindex(sorted(df_pivot.columns), axis=1)
         df_pivot.reset_index(inplace=True)
         return df_pivot
+
 
     def get_subcategory_counts_pivot_all_locs(self, table, column, start_date, end_date, freq):
         interval_value, interval_unit = self.parse_interval(freq)
