@@ -1,7 +1,7 @@
 from ast import Dict
 import random
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 import os
 from clickhouse import ClickHouseDBOps
 from tqdm import tqdm
@@ -9,7 +9,7 @@ load_dotenv()
 import random
 from datetime import datetime, timedelta
 from tqdm import tqdm
-
+import time
 
 import random
 
@@ -194,7 +194,8 @@ def transform_to_clickhouse(mock_data):
             "user_satisfaction": user_satisfaction,
             "categories": categories,
             "subcategories": subcategories,
-            "category_subcategory_dict": json.dumps(category_subcategory_dict, ensure_ascii=False),
+            # Store as a native dict so it maps to ClickHouse Map(String, Array(String))
+            "category_subcategory_dict": category_subcategory_dict,
             "call_reason": call_reason,
             "call_summary": call_summary,
             "suggestions": suggestions,
@@ -226,11 +227,11 @@ CLICKHOUSE_TABLES = {
     "user_satisfaction": "LowCardinality(String)",
     "categories": "Array(String)",
     "subcategories": "Array(String)",
-    "category_subcategory_dict": "String",
+    "category_subcategory_dict": "Map(String, Array(String))",
     "call_reason": "String",
     "call_summary": "String",
     "suggestions": "String",
-    "location_id": "String",
+    "location_id": "Int64",
     "user_id": "String",
     "agent_id": "String",
     "created_at": "DateTime64"
@@ -257,25 +258,28 @@ database_operator.create_table_if_not_exists(database, table_name, CLICKHOUSE_TA
 
 
 # Start time: 10 days ago from now
-all_data = build_mock_data(20)
+all_data = build_mock_data(4000)
 transformed_all_data = transform_to_clickhouse(all_data)
 database_operator.insert_batch(table_name, transformed_all_data)
 
 
+t1 = time.time()
 dfs_dic = database_operator.counts_per_timestep(
     table_name,
     ["all", "categories", "subcategories"],
     from_time_before="5d",
     freq='24h',
-    # loc_id=1003
+    loc_id="1003"
 )
+t2 = time.time()
+print(f"Time taken for counts_per_timestep: {t2 - t1} seconds")
 
-print("data")
-print(transformed_all_data)
+# print("data")
+# print(transformed_all_data)
 
-for key, df in dfs_dic.items():
-    print(f"\n\nPivot table for {key}:\n")
-    print(df)
+# for key, df in dfs_dic.items():
+#     print(f"\n\nPivot table for {key}:\n")
+#     print(df)
 
 # print("Show tables:")
 # tables = database_operator.show_tables()
