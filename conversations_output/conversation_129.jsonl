@@ -1,0 +1,60 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر روزبه هستم بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": false,
+      "where": []
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشترک بسته اینترنتی خریداری کرده و پیام‌های استفاده از اینترنت آزاد و رزرو بسته قبلی را دریافت کرده؛ می‌خواهد دلیل این پیام‌ها و نحوه غیرفعال‌سازی اینترنت آزاد و لغو رزرو را بپرسد.",
+    "dialogue_summary": "کارشناس پس از سلام، اطلاعات بسته‌های مشترک را بررسی کرد و توضیح داد که بسته‌های قبلی و رزرو شده چه زمانی به اتمام رسیده‌اند. مشترک درباره پیام‌های اینترنت آزاد و رزرو بسته سؤال کرد و کارشناس روش غیرفعال‌سازی اینترنت آزاد (ستاره ۱۰۰) و لغو رزرو را توضیح داد. در پایان مشترک از راهنمایی‌ها تشکر کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "عدم فعال سازی بسته اینترنت",
+    "عدم دریافت بسته اینترنت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "خرید بسته به دلیل بسته فعال قبلی ممنوع",
+      "category": "عدم فعال سازی بسته اینترنت"
+    }
+  ],
+  "call_subcategory_new": []
+}

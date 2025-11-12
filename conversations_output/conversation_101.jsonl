@@ -1,0 +1,59 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": false,
+      "where": []
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "ممنون از تماستون خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "سرعت اینترنت در ساعات شب (یک بامداد تا یازده صبح) کاهش می‌یابد.",
+    "dialogue_summary": "مشترک درباره کاهش سرعت اینترنت در ساعات شب شکایت کرد. کارشناس توضیح داد که به دلیل مصرف نزدیک به 100 گیگ از بسته نامحدود، سرعت در شب کاهش می‌یابد. مشترک درخواست بسته‌ای با حجم بالاتر کرد اما کارشناس اطلاعاتی درباره بسته‌های موجود نداد و در پایان مکالمه با تشکر و خداحافظی پایان یافت."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "کاهش سرعت اینترنت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "سرعت‌پایین شبانه بسته نامحدود",
+      "category": "کاهش سرعت اینترنت"
+    }
+  ],
+  "call_subcategory_new": []
+}

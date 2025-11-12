@@ -1,0 +1,59 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت‌تون بخیر، محمدی‌پور هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": false,
+      "where": []
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "خط تلفن مشترک به دلیل بدهی قطع شده و مشترک درباره هزینه‌های بازگردانی خط و هزینه‌های تعویض سیم‌کارت پرسش دارد.",
+    "dialogue_summary": "کاربر اعلام کرد که خط تلفن قطع است و نمی‌تواند تماس برقرار کند. کارشناس توضیح داد که قطع به دلیل بدهی است و برای ۷۲ ساعت آینده به صورت موقت خط را وصل می‌کند؛ هزینه موقت ۲,۵۰۰ تومان است. سپس درباره بدهی‌های قبلی، هزینه‌های تعویض سیم‌کارت و دریافت‌های احتمالی از دفتر خدمات بحث شد. کارشناس تأکید کرد که هزینه تعویض سیم‌کارت نباید از مشترک گرفته شود و در صورت دریافت می‌توان شکایت کرد. در پایان کاربر تشکر کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unknown"
+  },
+  "call_category_existing": [
+    "تعویض سیم‌کارت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "سیم‌کارت تعویض پس از گم شدن",
+      "category": "تعویض سیم‌کارت"
+    }
+  ],
+  "call_subcategory_new": []
+}

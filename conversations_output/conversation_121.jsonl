@@ -1,0 +1,63 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": false,
+      "where": []
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "ممنون از تماستون خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "شارژ خط انجام شده اما موجودی صفر می‌شود و شارژ اعمال نشده.",
+    "dialogue_summary": "مشترک اعلام کرد که پس از شارژ خط، موجودی صفر می‌شود و از حسابش کسر شده است. کارشناس با درخواست اطلاعات هویتی سعی در بررسی وضعیت شارژ کرد، اما به دلیل مغایرت اطلاعات نتوانست شماره را بخواند. در نهایت کارشناس روش USSD دستی برای شارژ مجدد را توضیح داد و مشترک از راهنمایی‌ها تشکر کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "عدم دریافت مبلغ شارژ"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "شارژ 5 تومنی دریافت نشد",
+      "category": "عدم دریافت مبلغ شارژ"
+    },
+    {
+      "subcategory": "شارژ 20 تومنی دریافت نشد",
+      "category": "absence دریافت مبلغ شارژ"
+    }
+  ],
+  "call_subcategory_new": []
+}

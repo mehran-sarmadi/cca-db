@@ -1,0 +1,61 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": false,
+      "where": []
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "خواهش میکنم خدانگهدار به نظرسنجی متصل میشین"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشترک برای ثبت خط سازمانی مدارک خود را بارگذاری کرده اما پیام «مدارک شما ناقص می‌باشد» دریافت کرده و می‌خواهد بداند کدام مدرک ناقص است و چگونه رفع کند.",
+    "dialogue_summary": "کارشناس پس از سلام، به مشترک می‌گوید مدارک بارگذاری شده‌اند. مشترک اعلام می‌کند پیام نقص مدارک دریافت کرده و می‌خواهد دلیل را بداند. کارشناس شماره ملی و نام تلفن را می‌پرسد، سپس راهنمایی می‌کند که به سامانه آیلنس وارد شود، فایل PDF مربوط به اطلاعات سازمان را دانلود کند و شماره ثبت را مطابق آن وارد کند. مشترک تأیید می‌کند که مشکل فقط در این مرحله است و از راهنمایی کارشناس تشکر می‌کند."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "بررسی ثبت نام سیم‌کارت"
+  ],
+  "call_category_new": [
+    "ثبت سازمان خط سازمانی"
+  ],
+  "call_subcategory_existing": [],
+  "call_subcategory_new": [
+    {
+      "subcategory": "مدارک ناقص ثبت سازمان",
+      "category": "ثبت سازمان خط سازمانی"
+    }
+  ]
+}

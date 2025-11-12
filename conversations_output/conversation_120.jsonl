@@ -1,0 +1,67 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، عسگری هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "ممنون از شما، خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشترک بسته اینترنت ۱۵ گیگابایتی خود را فعال نکرده و نمی‌تواند از اینترنت استفاده کند.",
+    "dialogue_summary": "کارشناس با سلام و معرفی خود شروع کرد. مشترک اعلام کرد که پس از خرید بسته ۱۵ گیگابایتی، پیامک فعال‌سازی دریافت نکرده و اینترنت کار نمی‌کند. کارشناس روش‌های استعلام و بررسی پیام‌های همراه اول را توضیح داد و به مشترک راهنمایی کرد تا وضعیت بسته را تأیید کند. پس از توضیح، مشترک تأیید دریافت داده شد و از راهنمایی‌ها تشکر کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "عدم فعال سازی بسته اینترنت",
+    "عدم دریافت پیامک فعال‌سازی بسته اینترنت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "بسته پس از تراکنش فعال نشد",
+      "category": "عدم فعال سازی بسته اینترنت"
+    }
+  ],
+  "call_subcategory_new": [
+    {
+      "subcategory": "عدم دریافت پیامک فعال‌سازی بسته اینترنت",
+      "category": "عدم دریافت پیامک فعال‌سازی بسته اینترنت"
+    }
+  ]
+}

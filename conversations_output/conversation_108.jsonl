@@ -1,0 +1,54 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، فرزانه هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "ممنون از تماس شما، خواهش می‌کنم. خداحافظ"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "پرداخت ۶۶ هزار تومان برای خرید سیم‌کارت کمپین زنده سانی، اما کد تخفیف و محصول دریافت نشده است.",
+    "dialogue_summary": "مشترک پس از احوالپرسی اعلام کرد که ۶۶ هزار تومان برای سیم‌کارت کمپین زنده سانی پرداخت کرده ولی کد تخفیف و محصول دریافت نکرده است. کارشناس مراحل بررسی پیامک‌ها، بلک‌لیست و فیلترشکن را توضیح داد و گفت کد تخفیف ممکن است با تاخیر ارسال شود. در نهایت کارشناس تأکید کرد که مبلغ پرداختی کافی است و نیازی به پرداخت مجدد نیست و کد تخفیف را می‌توان پس از دریافت وارد کرد. مشترک از راهنمایی‌ها تشکر کرد و مکالمه با خداحافظی پایان یافت."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [],
+  "call_category_new": [],
+  "call_subcategory_existing": [],
+  "call_subcategory_new": []
+}

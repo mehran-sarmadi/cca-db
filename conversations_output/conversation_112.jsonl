@@ -1,0 +1,61 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر افشار هستم بفرمایین"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "خواهش میکنم بزرگوارید ممنون از تماستون خواهش میکنم خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشکل در خرید بسته اینترنت 6 گیگابایتی از طریق کد USSD *100* و دریافت پیام برای پرداخت از طریق درگاه بانکی؛ کاربر راهنمایی برای خرید بسته می‌خواهد.",
+    "dialogue_summary": "کاربر با گفتن مشکل در استفاده از کد USSD برای خرید بسته اینترنتی، پیام خطا دریافت می‌کند. کارشناس سعی می‌کند کدها و مراحل را توضیح دهد و راه‌حل خرید بسته 6 گیگابایتی با شارژ یا از طریق درگاه بانکی ارائه می‌کند. در پایان کارشناس راهنمایی خرید را داد و کاربر از کمک راضی شد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "عدم فعال سازی بسته اینترنت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "بسته فعال نشد به دلیل سقف اعتبار میان‌دوره‌ای",
+      "category": "عدم فعال سازی بسته اینترنت"
+    }
+  ],
+  "call_subcategory_new": []
+}

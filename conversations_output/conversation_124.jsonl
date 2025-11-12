@@ -1,0 +1,59 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، من حقیقی هستم، بفرمایید."
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": false,
+      "where": []
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "عدم اتصال اینترنت گوشی پس از تعویض سیم‌کارت",
+    "dialogue_summary": "کارشناس با سلام و معرفی خود شروع کرد، نام خانوادگی مشترک (شمشیری) را دریافت کرد و سپس با پرسش درباره علائم روی صفحه، وضعیت VPN، LTE، IMEI و تنظیمات گوشی سعی در شناسایی مشکل کرد. مراحل متعددی شامل خاموش‑روشن کردن داده، بررسی VPN، جستجوی گوگل و تغییر تنظیمات انجام شد، اما اتصال اینترنت حل نشد. کارشناس پیشنهاد کرد سیم‌کارت را در گوشی دیگر تست کند و در صورت عدم رفع مشکل تماس مجدد بگیرد. مشترک در پایان خداحافظی کرد اما مشکل برطرف نشد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "عدم اتصال اینترنت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "عدم دسترسی به اینترنت برای برنامه‌ها",
+      "category": "عدم اتصال اینترنت"
+    }
+  ],
+  "call_subcategory_new": []
+}

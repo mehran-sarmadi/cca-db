@@ -1,0 +1,67 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، تکوا هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "خواهش می‌کنم، متشکرم، خدانگهدار، خداحافظ"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشترک قبض موبایل پدرش را پرداخت کرده اما همچنان پیام قطع سرویس دریافت می‌کند و درخواست بررسی بدهی و راهنمایی برای رفع مشکل دارد.",
+    "dialogue_summary": "کارشناس با سلام و معرفی شروع کرد. مشترک مشکل دریافت پیام قطع سرویس پس از پرداخت قبض پدرش را توضیح داد. کارشناس شماره پدر را دریافت کرد، اما به دلیل عدم دسترسی به اطلاعات مالکیت سیم‌کارت، امکان بررسی مستقیم را نداشت و راهنمایی‌های مربوط به استفاده از اپلیکیشن همراه من و کدهای USSD برای مشاهده قبوض را ارائه داد. در پایان مشترک تشکر کرد و کارشناس با خداحافظی پایان داد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "عدم ثبت پرداخت قبض",
+    "اختلاف مبلغ صورتحساب",
+    "اخطار قطع خط"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "عدم ثبت پرداخت قبض و دریافت پیام قطع",
+      "category": "عدم ثبت پرداخت قبض"
+    },
+    {
+      "subcategory": "هشدار قطع خط پس از پرداخت",
+      "category": "اخطار قطع خط"
+    }
+  ],
+  "call_subcategory_new": []
+}

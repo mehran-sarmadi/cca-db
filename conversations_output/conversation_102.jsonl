@@ -1,0 +1,61 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، صادقی هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "امر دیگری ندارید؟ ممنونم از شما، خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "شارژ دریافت شده روی خط نمایش داده نمی‌شود و پیامک‌های بانکی دریافت نمی‌شود.",
+    "dialogue_summary": "مشترک پس از دریافت شارژ، متوجه شد که اعتبار روی خطش نیست و پیامک‌های بانکی نیز نمی‌آید. کارشناس جزئیات شارژ و وضعیت اعتبار اضطراری را پرسید، سپس به احتمال وجود محدودیت‌های بانکی و بلک‌لیست گوشی اشاره کرد و راه‌حل‌های بررسی بلک‌لیست و پیگیری از بانک را پیشنهاد داد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "عدم دریافت پیامک کد تأیید بانکی"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "عدم دریافت پیامک تأیید بانک سپه",
+      "category": "عدم دریافت پیامک کد تأیید بانکی"
+    }
+  ],
+  "call_subcategory_new": []
+}

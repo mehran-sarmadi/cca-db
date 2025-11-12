@@ -1,0 +1,61 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، من شاهین هستم. بفرمایید."
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "در خدمت شما هستم، ممنون از تماس شما، خدانگهدارتون."
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشترک می‌خواهد بداند خط سیم‌کارت به نام چه کسی ثبت شده و چرا تماس‌های ناشناس از سرویس روبیکا دریافت می‌کند و درخواست پیگیری سوءاستفاده می‌کند.",
+    "dialogue_summary": "کارشناس با سلام و معرفی خود شروع کرد. مشترک درباره خط سیم‌کارت خود که به نظر می‌رسد توسط شخصی دیگر استفاده می‌شود و تماس‌های روزانه از روبیکا دریافت می‌کند، پرسید. کارشناس توضیح داد که سیم‌کارت‌های بدون استفاده تخلیه و به اپراتور واگذار می‌شوند و شماره پشتیبانی روبیکا را برای حذف حساب ارسال کرد. در پایان کارشناس خداحافظی کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "سلب مالکیت/تخلیه"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "تماس/پیامک از صاحب قبلی شماره",
+      "category": "سلب مالکیت/تخلیه"
+    }
+  ],
+  "call_subcategory_new": []
+}

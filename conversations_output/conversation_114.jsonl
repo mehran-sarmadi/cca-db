@@ -1,0 +1,61 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، فروتن هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "خواهش می‌کنم، سلامت باشید، روزتان بخیر، خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "درخواست ثبت خط به نام خود و دریافت جزئیات قسط‌ها و روش پرداخت آن",
+    "dialogue_summary": "مشترک برای ثبت خط به نام خود و دریافت اطلاعات قسط‌های خریداری شده تماس گرفت. کارشناس شماره‌های خط را دریافت کرد، جزئیات قسط‌ها (تعداد و مبلغ) را توضیح داد و روش پرداخت از طریق ستاره یک مربع (*#) را راهنمایی کرد. پس از ارسال شناسه قبض و مبلغ، مشترک راهنمایی‌های پرداخت را دریافت کرد و از کارشناس تشکر کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [],
+  "call_category_new": [
+    "پرداخت قسط خرید دستگاه"
+  ],
+  "call_subcategory_existing": [],
+  "call_subcategory_new": [
+    {
+      "subcategory": "ثبت نام خط برای قسط خرید دستگاه",
+      "category": "پرداخت قسط خرید دستگاه"
+    }
+  ]
+}

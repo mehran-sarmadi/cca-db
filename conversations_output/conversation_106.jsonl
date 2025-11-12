@@ -1,0 +1,59 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، سام هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": false,
+      "where": []
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "دریافت نشدن پیامک‌های بانکی و پیامک‌های شخصی برای چند روز",
+    "dialogue_summary": "مشترک اعلام کرد که برای چند روز پیامک‌های بانکی و شخصی دریافت نمی‌کند. کارشناس مشکل صدا را در تماس می‌گوید و سعی می‌کند دلیل عدم دریافت پیامک را بررسی کند، اما در نهایت پیشنهاد می‌کند که مشترک از بانک پیگیری کند. هیچ راه‌حل قطعی ارائه نشد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "عدم دریافت پیامک کد تأیید بانکی"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "عدم دریافت پیامک تأیید بانک تجارت",
+      "category": "عدم دریافت پیامک کد تأیید بانکی"
+    }
+  ],
+  "call_subcategory_new": []
+}

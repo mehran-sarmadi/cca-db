@@ -1,0 +1,65 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، یگانه هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "متشکر خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشکل فعال نشدن بستهٔ رزرو اینترنتی (10 گیگابایت 30 روزه) در اپلیکیشن همراه من و عدم کارکرد اینترنت برای برخی برنامه‌ها.",
+    "dialogue_summary": "مشترک پس از سلام، مشکل عدم فعال بودن بستهٔ رزرو اینترنتی خود را بیان کرد. کارشناس اطلاعات حساب را دریافت کرد، بسته را فعال کرد و راهنمایی‌های خاموش‑روشن کردن گوشی، بررسی وضعیت VPN و به‌روزرسانی برنامه را ارائه داد. در پایان کارشناس تأیید کرد که بسته فعال است و هر دو طرف با تشکر پایان دادند."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "عدم فعال سازی بسته اینترنت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "بسته پس از تراکنش فعال نشد",
+      "category": "عدم فعال سازی بسته اینترنت"
+    },
+    {
+      "subcategory": "عدم فعال‌سازی اینترنت پس از شارژ",
+      "category": "عدم فعال سازی بسته اینترنت"
+    }
+  ],
+  "call_subcategory_new": []
+}

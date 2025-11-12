@@ -1,0 +1,61 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "وقت بخیر، سعدی هستم. چطور می‌توانم کمکتان کنم؟"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "خواهش می‌کنم، خدانگهدار. به نظرسنجی متصل می‌شوید."
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "خط یک‌طرفه است و پس از چندین بار شارژ هنوز امکان برقراری تماس دوطرفه وجود ندارد.",
+    "dialogue_summary": "کارشناس با سلام و معرفی خود شروع کرد. مشترک مشکل یک‌طرفه بودن خط را پس از شارژ‌های متعدد توضیح داد. کارشناس جزئیات استان و شهر را پرسید، تیکت ثبت کرد و شماره تیکت را از طریق اس‌ام‌اس به مشترک اعلام کرد. کارشناس قول داد حداکثر تا دو ساعت آینده تماس بگیرد. در پایان کارشناس خداحافظی کرد و مشترک نیز تشکر و خداحافظی کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "یک‌طرفه بودن تماس"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "یک‌طرفه پس از پرداخت قطعی",
+      "category": "یک‌طرفه بودن تماس"
+    }
+  ],
+  "call_subcategory_new": []
+}

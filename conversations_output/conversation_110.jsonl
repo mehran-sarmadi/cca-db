@@ -1,0 +1,65 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": false,
+      "where": []
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "ممنون از تماستون، خداحافظ"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "شارژ ۵۰ هزار تومانی انجام شد اما ۲۰ هزار تومان به‌صورت هزینه‌ای کسر شد و مشترک دلیل آن را می‌پرسد.",
+    "dialogue_summary": "مشترک پس از سلام گفت که ۵۰ هزار تومان شارژ کرده و ۲۰ هزار تومان به‌صورت هزینه‌ای کسر شده است. کارشناس با بررسی خط، توضیح داد که این مبلغ مربوط به بسته اینترنت دو گیگابایتی و اعتبار اضطراری است و نحوه دریافت پیامک‌های اطلاع‌رسانی را شرح داد. مشترک پس از دریافت توضیح، تشکر کرد و مکالمه به‌خوبی پایان یافت."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "کسر اعتبار",
+    "عدم دریافت پیامک بسته اینترنتی"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "کسر اعتبار بابت خرید بسته اینترنت",
+      "category": "کسر اعتبار"
+    }
+  ],
+  "call_subcategory_new": [
+    {
+      "subcategory": "عدم دریافت پیامک فعال‌سازی بسته اینترنت",
+      "category": "عدم دریافت پیامک بسته اینترنتی"
+    }
+  ]
+}

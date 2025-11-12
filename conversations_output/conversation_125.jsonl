@@ -1,0 +1,62 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، من عسگری هستم. بفرمایید."
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "ممنون زحمت کشیدید، خدانگهدار."
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "گم شدن سیم‌کارت و نیاز به دریافت کد پین برای فعال‌سازی خط",
+    "dialogue_summary": "کارشناس با سلام و معرفی خود مکالمه را آغاز کرد. مشترک اعلام کرد سیم‌کارت گم شده و برای دریافت کد پین تماس گرفته است. کارشناس برای احراز هویت اطلاعات شخصی (نام، نام پدر، شماره شناسنامه، تاریخ تولد) را جمع‌آوری کرد و متوجه شد خط به نام مشترک نیست. پس از تأیید هویت، کارشناس کد هشت رقمی مورد نیاز برای تنظیم پین جدید را به مشترک داد و نحوه تنظیم پین جدید را توضیح داد. مشترک از خدمات تشکر کرد و خداحافظی کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "گم شدن سیم‌کارت",
+    "دریافت کد فعال‌سازی سیم‌کارت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "عدم دریافت یا ثبت کد احراز هویت برای تبدیل به دائمی",
+      "category": "دریافت کد فعال‌سازی سیم‌کارت"
+    }
+  ],
+  "call_subcategory_new": []
+}

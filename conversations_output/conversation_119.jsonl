@@ -1,0 +1,66 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "ANGRY",
+      "where": [
+        "ببخشید پشت خطی من هنوز درست نشده",
+        "به اون دفعه زنگ زدیم الان هنوز درست نشده",
+        "گفتی خاموش روشن کن خاموش روشن کردم باز هم درست نشده"
+      ]
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر باقری هستم بفرمایین"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "ممنون مرسی خدانگهدار",
+        "ممنون مرسی خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "خط تلفن مشترک فعال نیست و مشکل اتصال دارد.",
+    "dialogue_summary": "مشترک اعلام می‌کند که خط تلفن او هنوز درست نشده و پس از چند بار تماس و راهنمایی برای خاموش‑روشن کردن، مشکل برطرف نشده است. کارشناس سعی می‌کند با وارد کردن شماره و فعال‌سازی از راه دور مشکل را حل کند، اما به دلیل عدم دریافت شماره کامل، عملیات کامل نمی‌شود و در نهایت تماس خاتمه می‌یابد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "اختلال خط"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [],
+  "call_subcategory_new": [
+    {
+      "subcategory": "خط فعال نیست",
+      "category": "اختلال خط"
+    }
+  ]
+}

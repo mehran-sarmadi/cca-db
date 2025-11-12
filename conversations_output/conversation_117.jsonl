@@ -1,0 +1,59 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر نیکو هستم بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": false,
+      "where": []
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشکل دریافت تماس‌های ورودی؛ خط به‌نظر می‌رسد خاموش یا دایورت شده است.",
+    "dialogue_summary": "کارشناس با سلام و معرفی شروع کرد، سپس از مشترک اطلاعات سیم‌کارت و مشکل دریافت تماس‌های ورودی (خط به‌نظر می‌رسد خاموش) را دریافت کرد. کارشناس بررسی‌های شبکه، وضعیت دایورت و کدهای USSD را انجام داد و مشترک را به آزمون روی گوشی دیگر و دوباره زدن کدها راهنمایی کرد. در پایان مشترک تشکر کرد و خداحافظی کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "عدم دریافت تماس"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "عدم دریافت تماس به دلیل فعال‌سازی یا پوشش",
+      "category": "عدم دریافت تماس"
+    }
+  ],
+  "call_subcategory_new": []
+}

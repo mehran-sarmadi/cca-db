@@ -1,0 +1,65 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر رضازاده هستم بفرمایین"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "خواهش میکنم ممنونم از تماستون خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "عدم بازگشت مبلغ بسته رومینگ خریداری شده برای ترکیه و مشکل در تغییر آوای انتظار (آوای انتظار عوض نمی‌شود).",
+    "dialogue_summary": "مشترک دو مشکل دارد: اول، مبلغ یک بسته رومینگ ۱۸۰ هزار تومانی که یک ماه پیش خریداری کرده برای ترکیه، هنوز به حسابش بازنگشته؛ دوم، تغییر آوای انتظار (آوای انتظار) که اعمال نمی‌شود. کارشناس اطلاعات تراکنش، درگاه خرید و شماره پیگیری را درخواست می‌کند و سعی می‌کند پرونده‌ای برای پیگیری باز کند. در نهایت کارشناس جزئیات هزینه تغییر آوا را توضیح می‌دهد و مشترک از راهنمایی‌ها تشکر می‌کند."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "عدم دریافت مبلغ شارژ"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [],
+  "call_subcategory_new": [
+    {
+      "subcategory": "عدم بازگشت مبلغ بسته رومینگ",
+      "category": "عدم دریافت مبلغ شارژ"
+    },
+    {
+      "subcategory": "آوای انتظار عوض نمی‌شود",
+      "category": "عدم دریافت مبلغ شارژ"
+    }
+  ]
+}

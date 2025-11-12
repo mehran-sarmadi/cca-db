@@ -1,0 +1,73 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "ANGRY",
+      "where": [
+        "پس چرا نیومده هیچی",
+        "ولی این چیزا ببین برداشت کم شده"
+      ]
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، من یگانه هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "ممنون از شما خدانگهدار"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشترک می‌خواست بسته اینترنت 10 گیگ 30 روزه خریداری کند اما پس از کسر شارژ بسته فعال نشده بود.",
+    "dialogue_summary": "کارشناس پس از سلام و معرفی، اطلاعات شخصی مشترک را دریافت کرد و اعلام کرد بسته اینترنت 10 گیگ 30 روزه برای او فعال شده است. مشترک به عدم دریافت بسته و برداشت شارژ از حسابش اعتراض کرد. کارشناس نکات فنی مربوط به اپلیکیشن و دریافت پیامک فعال‌سازی را توضیح داد و تأیید کرد که بسته فعال است. در پایان مشترک تشکر کرد و کارشناس خداحافظی کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [
+    "عدم دریافت بسته اینترنت",
+    "عدم فعال سازی بسته اینترنت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "بسته پس از تراکنش فعال نشد",
+      "category": "عدم فعال سازی بسته اینترنت"
+    },
+    {
+      "subcategory": "عدم فعال‌سازی اینترنت پس از شارژ",
+      "category": "عدم فعال سازی بسته اینترنت"
+    },
+    {
+      "subcategory": "بسته اینترنت فعال نشده",
+      "category": "عدم دریافت بسته اینترنت"
+    }
+  ],
+  "call_subcategory_new": []
+}

@@ -1,0 +1,61 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت شما بخیر، من ... هستم، بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "خواهش می‌کنم، ممنون از تماس، زنده باشید، خداحافظ"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "انتقال اعتبار از خط دائمی به خط اعتباری (شارژ خط دیگر) توسط مشترک درخواست شد.",
+    "dialogue_summary": "کارشناس با سلام و معرفی شروع کرد. مشترک درخواست کرد کدهای لازم برای انتقال اعتبار از خط دائمی به خط دیگر را بگیرد. کارشناس جزئیات خط‌ها و مبلغ را پرسید، سپس کد دستوری *10*140# و روش جایگزین را از طریق پیامک برای مشترک ارسال کرد. مشترک پس از انجام عملیات خود تشکر کرد و کارشناس با خداحافظی پایان داد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "satisfied"
+  },
+  "call_category_existing": [],
+  "call_category_new": [
+    "انتقال اعتبار"
+  ],
+  "call_subcategory_existing": [],
+  "call_subcategory_new": [
+    {
+      "subcategory": "انتقال اعتبار از خط دائمی به خط اعتباری",
+      "category": "انتقال اعتبار"
+    }
+  ]
+}

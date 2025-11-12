@@ -1,0 +1,65 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت بخیر، من رجبی هستم. بفرمایید"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": true,
+      "where": [
+        "سلامت باشید، خداحافظ"
+      ]
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "مشکل فعال نشدن بسته اینترنت ۲ گیگابایتی پس از شارژ و عدم تمدید خودکار",
+    "dialogue_summary": "مشترک پس از سلام، درباره عدم فعال شدن بسته ۲ گیگابایتی که پس از شارژ دریافت کرده بود، شکایت کرد. کارشناس اطلاعات حساب و زمان‌های شارژ را بررسی کرد، توضیح داد که بسته به صورت خودکار تمدید نمی‌شود و برای فعال شدن باید موجودی کافی داشته باشد. هر دو طرف جزئیات شارژهای قبلی و مانده‌ساعت‌ها را مرور کردند، اما مشکل فعال نشدن بسته حل نشد. در پایان مشترک از کارشناس تشکر کرد."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unsatisfied"
+  },
+  "call_category_existing": [
+    "عدم فعال سازی بسته اینترنت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "عدم فعال‌سازی اینترنت پس از شارژ",
+      "category": "عدم فعال سازی بسته اینترنت"
+    },
+    {
+      "subcategory": "بسته پس از تراکنش فعال نشد",
+      "category": "عدم فعال سازی بسته اینترنت"
+    }
+  ],
+  "call_subcategory_new": []
+}

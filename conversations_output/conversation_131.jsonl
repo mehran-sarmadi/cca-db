@@ -1,0 +1,64 @@
+{
+  "sentiment_analysis": {
+    "expert": {
+      "class": "NORMAL",
+      "where": []
+    },
+    "subscriber": {
+      "class": "NORMAL",
+      "where": []
+    }
+  },
+  "bad_words": {
+    "expert": {
+      "class": false,
+      "where": []
+    },
+    "subscriber": {
+      "class": false,
+      "where": []
+    }
+  },
+  "start_greeting": {
+    "expert": {
+      "class": true,
+      "where": [
+        "سلام وقت شما بخیر باشد"
+      ]
+    }
+  },
+  "end_greeting": {
+    "farewell": {
+      "class": false,
+      "where": []
+    },
+    "reference": {
+      "class": false,
+      "where": []
+    }
+  },
+  "summary": {
+    "call_reason_summary": "استعلام از پوشش و پشتیبانی مودم‌های نسل پنج (فایوجی/فورجی) در مناطق مختلف (مانند گلستان نهم و سایر مناطق)",
+    "dialogue_summary": "مشترک دربارهٔ پشتیبانی مودم‌های نسل پنج در محله‌ها و بلوارهای مختلف سؤال می‌کند. کارشناس اطلاعاتی دربارهٔ مناطق پشتیبانی‌شده (مانند گلستان نهم) و محدودیت‌های کد و سرعت ارائه می‌دهد. گفتگو شامل توضیح مکان‌های دقیق، بررسی پشتیبانی فایوجی/فورجی و برخی نکات فنی بود؛ در پایان هر دو طرف با تشکر و آرزوی روز خوب پایان دادند."
+  },
+  "sugestions": "",
+  "satisfaction": {
+    "class": "unknown"
+  },
+  "call_category_existing": [
+    "مشکل در آنتن دهی",
+    "کاهش سرعت اینترنت"
+  ],
+  "call_category_new": [],
+  "call_subcategory_existing": [
+    {
+      "subcategory": "قطعی سیگنال یا پوشش ضعیف",
+      "category": "مشکل در آنتن دهی"
+    },
+    {
+      "subcategory": "سرعت‌پایین شبانه بسته نامحدود",
+      "category": "کاهش سرعت اینترنت"
+    }
+  ],
+  "call_subcategory_new": []
+}
