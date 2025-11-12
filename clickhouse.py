@@ -51,6 +51,19 @@ class ClickHouseDBOps():
             sql = f"CREATE TABLE IF NOT EXISTS {database_name}.{table_name} ({cols_def}) {engine_clause}"
             self.ch_client.execute(sql)
 
+    def show_tables(self, database_name: Optional[str] = None) -> List[str]:
+        """
+        Returns a list of all table names in the specified database.
+        If database_name is not provided, uses the connected database.
+        """
+        if database_name:
+            query = f"SHOW TABLES FROM {database_name}"
+        else:
+            query = "SHOW TABLES"
+        data = self.ch_client.execute(query)
+        tables = [row[0] for row in data]
+        return tables
+
     # 4. Data insertion methods
     def insert_row(self, table: str, row: Dict[str, Any]) -> None:
         cols = list(row.keys())
@@ -94,65 +107,46 @@ class ClickHouseDBOps():
             sql = f"INSERT INTO {table} ({', '.join(cols)}) VALUES"
             self.ch_client.execute(sql, rows_to_insert)
 
-    # 5. Data retrieval/query methods
-    def get_category_counts(self, table, column, start_date=None, end_date=None, loc_id: Optional[int] = None):
-        """
-        Returns a DataFrame with each category and its count, sorted by count descending.
-        """
-        date_filter = ""
-        if start_date:
-            date_filter += f" AND created_at >= toDateTime('{start_date}')"
-        if end_date:
-            date_filter += f" AND created_at < toDateTime('{end_date}')"
-        loc_filter = f" AND location_id = {loc_id}" if loc_id is not None else ""
-        query = f"""
-            SELECT
-                arrayJoin({column}) AS category,
-                count() AS cnt
-            FROM {table}
-            WHERE 1=1
-            {date_filter}
-            {loc_filter}
-            GROUP BY category
-            ORDER BY cnt DESC
-        """
-        data = self.ch_client.execute(query)
-        df = pd.DataFrame(data, columns=["category", "count"])
-        return df
+    def counts_per_timestep(self, table: str, columns: list[str], from_time_before: int | str | datetime, freq: str, loc_id: Optional[int] = None, end_date: Optional[datetime] = None) -> Dict[str, pd.DataFrame]:
+        """Return dictionary of pivot DataFrames aggregated per time step.
 
-    def get_subcategory_counts(self, table, column, start_date=None, end_date=None, loc_id: Optional[int] = None):
+        from_time_before:
+          - int -> days back (legacy)
+          - str interval like '100m', '4h', '10d'
+          - datetime -> explicit start time
+        end_date:
+          - Optional datetime for explicit end time (defaults to now)
         """
-        Returns a DataFrame with each (category, subcategory) and its count, sorted by count descending.
-        Assumes column is a Map(String, Array(String)) mapping categories to subcategory lists.
-        """
-        date_filter = ""
-        if start_date:
-            date_filter += f" AND created_at >= toDateTime('{start_date}')"
-        if end_date:
-            date_filter += f" AND created_at < toDateTime('{end_date}')"
-        loc_filter = f" AND location_id = {loc_id}" if loc_id is not None else ""
-        query = f"""
-            SELECT
-                k AS category,
-                subcat AS subcategory,
-                count() AS cnt
-            FROM (
-                SELECT
-                    arrayJoin(mapKeys({column})) AS k,
-                    arrayJoin({column}[k]) AS subcat
-                FROM {table}
-                WHERE 1=1
-                {date_filter}
-                {loc_filter}
-            )
-            GROUP BY category, subcategory
-            ORDER BY cnt DESC
-        """
-        data = self.ch_client.execute(query)
-        df = pd.DataFrame(data, columns=["category", "subcategory", "count"])
-        return df
+        if not columns:
+            return {}
 
-    def get_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
+        # Resolve start/end time
+        if isinstance(from_time_before, datetime):
+            start_date = from_time_before
+            end_date = end_date or datetime.now()
+        else:
+            if isinstance(from_time_before, int):
+                from_time_before = f"{from_time_before}d"
+            value, unit = self.parse_interval(str(from_time_before))
+            delta_map = {
+                "MINUTE": timedelta(minutes=value),
+                "HOUR": timedelta(hours=value),
+                "DAY": timedelta(days=value),
+            }
+            end_date = end_date or datetime.now()
+            start_date = end_date - delta_map[unit]
+
+        result = {
+            "categories": self.get_category_counts_pivot(table, "categories", start_date, end_date, freq, loc_id),
+            "subcategories": self.get_subcategory_counts_pivot(table, "category_subcategory_dict", start_date, end_date, freq, loc_id),
+            "all": self.get_row_counts_per_timestep(table, start_date, end_date, freq, loc_id),
+        }
+
+        return result
+
+
+
+    def get_category_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
         interval_value, interval_unit = self.parse_interval(freq)
         def fmt(dt):
             if isinstance(dt, datetime):
@@ -179,6 +173,7 @@ class ClickHouseDBOps():
             return pd.DataFrame()
         df_pivot = df.pivot_table(index="category", columns="time_group", values="count", fill_value=0)
         df_pivot = df_pivot.reindex(sorted(df_pivot.columns), axis=1)
+        df_pivot.reset_index(inplace=True)
         return df_pivot
 
     def get_subcategory_counts_pivot(self, table, column, start_date, end_date, freq, loc_id: Optional[int] = None):
@@ -216,8 +211,9 @@ class ClickHouseDBOps():
         df[["category", "subcategory"]] = kv_df
         df_pivot = df.pivot_table(index=["category", "subcategory"], columns="time_group", values="count", fill_value=0)
         df_pivot = df_pivot.reindex(sorted(df_pivot.columns), axis=1)
+        df_pivot.reset_index(inplace=True)
         return df_pivot
-
+    
     def get_row_counts_per_timestep(self, table: str, start_date: datetime, end_date: datetime, freq: str, loc_id: Optional[int] = None) -> pd.DataFrame:
         """Returns a DataFrame with row counts aggregated per time step."""
         interval_value, interval_unit = self.parse_interval(freq)
@@ -243,60 +239,6 @@ class ClickHouseDBOps():
         df = pd.DataFrame(data, columns=["time_group", "count"])
         return df
 
-    def counts_per_timestep(self, table: str, columns: list[str], from_time_before: int | str | datetime, freq: str, loc_id: Optional[int] = None, end_date: Optional[datetime] = None) -> Dict[str, pd.DataFrame]:
-        """Return dictionary of pivot DataFrames aggregated per time step.
-
-        from_time_before:
-          - int -> days back (legacy)
-          - str interval like '100m', '4h', '10d'
-          - datetime -> explicit start time
-        end_date:
-          - Optional datetime for explicit end time (defaults to now)
-        """
-        if not columns:
-            return {}
-
-        # Resolve start/end time
-        if isinstance(from_time_before, datetime):
-            start_date = from_time_before
-            end_date = end_date or datetime.now()
-        else:
-            if isinstance(from_time_before, int):
-                from_time_before = f"{from_time_before}d"
-            value, unit = self.parse_interval(str(from_time_before))
-            delta_map = {
-                "MINUTE": timedelta(minutes=value),
-                "HOUR": timedelta(hours=value),
-                "DAY": timedelta(days=value),
-            }
-            end_date = end_date or datetime.now()
-            start_date = end_date - delta_map[unit]
-
-        # Alias mapping
-        alias_map = {
-            "category": "categories",
-            "categories": "categories",
-            "subcategory": "subcategories",
-            "subcategories": "subcategories",
-            "all": "all",
-        }
-
-        # Aggregators for resolved tokens
-        aggregators: Dict[str, Any] = {
-            "categories": lambda: self.get_counts_pivot(table, "categories", start_date, end_date, freq, loc_id),
-            "subcategories": lambda: self.get_subcategory_counts_pivot(table, "category_subcategory_dict", start_date, end_date, freq, loc_id),
-            "all": lambda: self.get_row_counts_per_timestep(table, start_date, end_date, freq, loc_id),
-        }
-
-        result: Dict[str, pd.DataFrame] = {}
-        for original in columns:
-            resolved = alias_map.get(original, original)
-            if resolved in aggregators:
-                result[original] = aggregators[resolved]()
-            else:
-                # Fallback: treat resolved as array column
-                result[original] = self.get_counts_pivot(table, resolved, start_date, end_date, freq, loc_id)
-        return result
 
     # 6. Utility/helper methods
     @staticmethod
@@ -323,3 +265,122 @@ class ClickHouseDBOps():
         if unit_raw.startswith("d"):
             return value, "DAY"
         raise ValueError(f"Unsupported interval unit: {unit_raw}")
+    
+
+    def counts_per_timestep_all_locs(
+        self,
+        table: str,
+        columns: list[str],
+        from_time_before: int | str | datetime,
+        freq: str,
+        end_date: Optional[datetime] = None
+    ) -> Dict[int, Dict[str, pd.DataFrame]]:
+        """Return dictionary of pivot DataFrames aggregated per time step for all location_ids."""
+
+        if not columns:
+            return {}
+
+        # Resolve start/end time (same logic as before)
+        if isinstance(from_time_before, datetime):
+            start_date = from_time_before
+            end_date = end_date or datetime.now()
+        else:
+            if isinstance(from_time_before, int):
+                from_time_before = f"{from_time_before}d"
+            value, unit = self.parse_interval(str(from_time_before))
+            delta_map = {
+                "MINUTE": timedelta(minutes=value),
+                "HOUR": timedelta(hours=value),
+                "DAY": timedelta(days=value),
+            }
+            end_date = end_date or datetime.now()
+            start_date = end_date - delta_map[unit]
+        result ={
+        "categories" : self.get_category_counts_pivot_all_locs(table, "categories", start_date, end_date, freq),
+        "subcategories": self.get_subcategory_counts_pivot_all_locs(table, "category_subcategory_dict", start_date, end_date, freq),
+        "all": self.get_row_counts_per_timestep_all_locs(table, start_date, end_date, freq)
+        }
+        return result
+
+
+    def get_category_counts_pivot_all_locs(self, table, column, start_date, end_date, freq):
+        interval_value, interval_unit = self.parse_interval(freq)
+        def fmt(dt):
+            return dt.strftime("%Y-%m-%d %H:%M:%S") if isinstance(dt, datetime) else str(dt).replace("T", " ").split(".")[0]
+        start_date, end_date = fmt(start_date), fmt(end_date)
+
+        query = f"""
+            SELECT
+                toStartOfInterval(created_at, INTERVAL {interval_value} {interval_unit}) AS time_group,
+                arrayJoin({column}) AS category,
+                location_id,
+                count() AS cnt
+            FROM {table}
+            WHERE created_at >= toDateTime('{start_date}')
+            AND created_at < toDateTime('{end_date}')
+            GROUP BY time_group, category, location_id
+            ORDER BY time_group, category, location_id
+        """
+        data = self.ch_client.execute(query)
+        df = pd.DataFrame(data, columns=["time_group", "category", "location_id", "count"])
+        if df.empty:
+            return pd.DataFrame()
+        df_pivot = df.pivot_table(index=["location_id", "category"], columns="time_group", values="count", fill_value=0)
+        df_pivot = df_pivot.reindex(sorted(df_pivot.columns), axis=1)
+        df_pivot.reset_index(inplace=True)
+        return df_pivot
+
+    def get_subcategory_counts_pivot_all_locs(self, table, column, start_date, end_date, freq):
+        interval_value, interval_unit = self.parse_interval(freq)
+        def fmt(dt):
+            return dt.strftime("%Y-%m-%d %H:%M:%S") if isinstance(dt, datetime) else str(dt).replace("T", " ").split(".")[0]
+        start_date, end_date = fmt(start_date), fmt(end_date)
+
+        query = f"""
+            SELECT
+                toStartOfInterval(created_at, INTERVAL {interval_value} {interval_unit}) AS time_group,
+                (k, toString(subcat)) AS kv_pair,
+                location_id,
+                count() AS cnt
+            FROM (
+                SELECT created_at, k, arrayJoin({column}[k]) AS subcat, location_id
+                FROM (
+                    SELECT created_at, arrayJoin(mapKeys({column})) AS k, {column}, location_id
+                    FROM {table}
+                    WHERE created_at >= toDateTime('{start_date}')
+                    AND created_at < toDateTime('{end_date}')
+                )
+            )
+            GROUP BY time_group, kv_pair, location_id
+            ORDER BY time_group, kv_pair, location_id
+        """
+        data = self.ch_client.execute(query)
+        df = pd.DataFrame(data, columns=["time_group", "kv_pair", "location_id", "count"])
+        if df.empty:
+            return pd.DataFrame()
+        kv_df = pd.DataFrame(df["kv_pair"].tolist(), columns=["category", "subcategory"])
+        df[["category", "subcategory"]] = kv_df
+        df_pivot = df.pivot_table(index=["location_id", "category", "subcategory"], columns="time_group", values="count", fill_value=0)
+        df_pivot = df_pivot.reindex(sorted(df_pivot.columns), axis=1)
+        df_pivot.reset_index(inplace=True)
+        return df_pivot
+
+    def get_row_counts_per_timestep_all_locs(self, table, start_date, end_date, freq):
+        interval_value, interval_unit = self.parse_interval(freq)
+        def fmt(dt):
+            return dt.strftime("%Y-%m-%d %H:%M:%S") if isinstance(dt, datetime) else str(dt).replace("T", " ").split(".")[0]
+        start_date, end_date = fmt(start_date), fmt(end_date)
+
+        query = f"""
+            SELECT
+                toStartOfInterval(created_at, INTERVAL {interval_value} {interval_unit}) AS time_group,
+                location_id,
+                count() AS cnt
+            FROM {table}
+            WHERE created_at >= toDateTime('{start_date}')
+            AND created_at < toDateTime('{end_date}')
+            GROUP BY time_group, location_id
+            ORDER BY time_group, location_id
+        """
+        data = self.ch_client.execute(query)
+        return pd.DataFrame(data, columns=["time_group", "location_id", "count"])

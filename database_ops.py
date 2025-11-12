@@ -170,7 +170,7 @@ def transform_to_clickhouse(mock_data):
         suggestions = record.get("sugestions", "")
 
         # Other metadata
-        location_id = str(record["loc_id"])
+        location_id = record["loc_id"]
         user_id = "user_" + str(random.randint(1000, 9999))
         agent_id = "agent_" + str(random.randint(1000, 9999))
         # Convert string back to datetime for ClickHouse DateTime64 column
@@ -258,21 +258,61 @@ database_operator.create_table_if_not_exists(database, table_name, CLICKHOUSE_TA
 
 
 # Start time: 10 days ago from now
-all_data = build_mock_data(4000)
+all_data = build_mock_data(1000)
 transformed_all_data = transform_to_clickhouse(all_data)
-database_operator.insert_batch(table_name, transformed_all_data)
+
+# print("Print transformed data:")
+# for data in transformed_all_data:
+#     print("\n----\n")
+#     for key, value in data.items():
+#         print(f"{key}")
+#         print(f"{value}")
+
+
+
+database_operator.insert_batch(table_name, transformed_all_data, batch_size=10000)
+
+
 
 
 t1 = time.time()
 dfs_dic = database_operator.counts_per_timestep(
     table_name,
     ["all", "categories", "subcategories"],
-    from_time_before="5d",
-    freq='24h',
-    loc_id="1003"
+    from_time_before="4d",
+    freq='d',
+    # loc_id="1003"
 )
 t2 = time.time()
 print(f"Time taken for counts_per_timestep: {t2 - t1} seconds")
+
+
+
+# for key, df in dfs_dic.items():
+#     print(f"\n\nPivot table for {key}:\n")
+#     print(df)
+
+
+t1 = time.time()
+dfs_dic = database_operator.counts_per_timestep_all_locs(
+    table_name,
+    ["all", "categories", "subcategories"],
+    from_time_before="4d",
+    freq='d',
+    # loc_id="1003"
+)
+t2 = time.time()
+print(f"Time taken for counts_per_timestep: {t2 - t1} seconds")
+
+# for key, df in dfs_dic.items():
+#     print(f"\n\nPivot table for {key}:\n")
+#     print(df)
+
+
+# # Access per-location breakdowns easily:
+# print(result["all"].head())               # total counts by location_id and time
+# print(result["categories"].head())        # category counts per location
+# print(result["subcategories"].head())     # subcategory counts per location
 
 # print("data")
 # print(transformed_all_data)
@@ -291,3 +331,5 @@ print(f"Time taken for counts_per_timestep: {t2 - t1} seconds")
 #     data = database_operator.ch_client.execute(f"SELECT * FROM {table} LIMIT 5")
 #     for row in data:
 #         print(row)
+
+database_operator.close()

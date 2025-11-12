@@ -1,0 +1,183 @@
+Time taken for counts_per_timestep: 0.309051513671875 seconds
+
+
+Pivot table for categories:
+
+time_group     category  ...  2025-11-12 00:00:00
+0            category_1  ...                  1.0
+1           category_10  ...                  0.0
+2            category_2  ...                  1.0
+3            category_3  ...                  1.0
+4            category_4  ...                  1.0
+5            category_5  ...                  1.0
+6            category_6  ...                  2.0
+7            category_7  ...                  1.0
+8            category_8  ...                  0.0
+9            category_9  ...                  0.0
+
+[10 rows x 6 columns]
+
+
+Pivot table for subcategories:
+
+time_group     category  ... 2025-11-12 00:00:00
+0            category_1  ...                 1.0
+1            category_1  ...                 0.0
+2           category_10  ...                 0.0
+3           category_10  ...                 0.0
+4           category_10  ...                 0.0
+5            category_2  ...                 0.0
+6            category_2  ...                 1.0
+7            category_2  ...                 0.0
+8            category_3  ...                 0.0
+9            category_3  ...                 1.0
+10           category_4  ...                 0.0
+11           category_4  ...                 0.0
+12           category_4  ...                 1.0
+13           category_5  ...                 1.0
+14           category_5  ...                 0.0
+15           category_6  ...                 1.0
+16           category_6  ...                 1.0
+17           category_6  ...                 0.0
+18           category_7  ...                 0.0
+19           category_7  ...                 1.0
+20           category_7  ...                 0.0
+21           category_8  ...                 0.0
+22           category_8  ...                 0.0
+23           category_9  ...                 0.0
+24           category_9  ...                 0.0
+
+[25 rows x 7 columns]
+
+
+Pivot table for all:
+
+  time_group  count
+0 2025-11-08      2
+1 2025-11-09     11
+2 2025-11-10     11
+3 2025-11-11      9
+4 2025-11-12      8
+Time taken for counts_per_timestep: 0.3358790874481201 seconds
+
+
+Pivot table for categories:
+
+time_group  location_id     category  ...  2025-11-11 00:00:00  2025-11-12 00:00:00
+0                  1001   category_1  ...                  0.0                  0.0
+1                  1001  category_10  ...                  1.0                  0.0
+2                  1001   category_2  ...                  0.0                  0.0
+3                  1001   category_3  ...                  1.0                  0.0
+4                  1001   category_9  ...                  1.0                  0.0
+5                  1002   category_1  ...                  0.0                  1.0
+6                  1002   category_2  ...                  0.0                  0.0
+7                  1002   category_4  ...                  0.0                  1.0
+8                  1003   category_3  ...                  0.0                  0.0
+9                  1003   category_5  ...                  0.0                  1.0
+10                 1003   category_7  ...                  0.0                  0.0
+11                 1004  category_10  ...                  0.0                  0.0
+12                 1004   category_3  ...                  0.0                  1.0
+13                 1004   category_5  ...                  0.0                  0.0
+14                 1004   category_7  ...                  0.0                  0.0
+15                 1005   category_2  ...                  0.0                  1.0
+16                 1005   category_5  ...                  0.0                  0.0
+17                 1005   category_9  ...                  1.0                  0.0
+18                 1006  category_10  ...                  1.0                  0.0
+19                 1006   category_6  ...                  0.0                  1.0
+20                 1006   category_7  ...                  0.0                  0.0
+21                 1006   category_8  ...                  0.0                  0.0
+22                 1007   category_4  ...                  0.0                  0.0
+23                 1007   category_5  ...                  0.0                  0.0
+24                 1007   category_6  ...                  1.0                  0.0
+25                 1008   category_2  ...                  0.0                  0.0
+26                 1008   category_8  ...                  0.0                  0.0
+27                 1008   category_9  ...                  0.0                  0.0
+28                 1009   category_5  ...                  1.0                  0.0
+29                 1009   category_6  ...                  0.0                  1.0
+30                 1009   category_7  ...                  0.0                  1.0
+31                 1009   category_8  ...                  1.0                  0.0
+32                 1009   category_9  ...                  0.0                  0.0
+33                 1010  category_10  ...                  0.0                  0.0
+34                 1010   category_4  ...                  1.0                  0.0
+
+[35 rows x 7 columns]
+
+
+Pivot table for subcategories:
+
+time_group  location_id     category  ... 2025-11-11 00:00:00  2025-11-12 00:00:00
+0                  1001   category_1  ...                 0.0                  0.0
+1                  1001  category_10  ...                 1.0                  0.0
+2                  1001   category_2  ...                 0.0                  0.0
+3                  1001   category_3  ...                 1.0                  0.0
+4                  1001   category_9  ...                 1.0                  0.0
+5                  1002   category_1  ...                 0.0                  1.0
+6                  1002   category_2  ...                 0.0                  0.0
+7                  1002   category_4  ...                 0.0                  0.0
+8                  1002   category_4  ...                 0.0                  1.0
+9                  1003   category_3  ...                 0.0                  0.0
+10                 1003   category_5  ...                 0.0                  1.0
+11                 1003   category_7  ...                 0.0                  0.0
+12                 1004  category_10  ...                 0.0                  0.0
+13                 1004   category_3  ...                 0.0                  1.0
+14                 1004   category_5  ...                 0.0                  0.0
+15                 1004   category_7  ...                 0.0                  0.0
+16                 1005   category_2  ...                 0.0                  1.0
+17                 1005   category_5  ...                 0.0                  0.0
+18                 1005   category_9  ...                 1.0                  0.0
+19                 1006  category_10  ...                 1.0                  0.0
+20                 1006   category_6  ...                 0.0                  1.0
+21                 1006   category_7  ...                 0.0                  0.0
+22                 1006   category_7  ...                 0.0                  0.0
+23                 1006   category_8  ...                 0.0                  0.0
+24                 1007   category_4  ...                 0.0                  0.0
+25                 1007   category_5  ...                 0.0                  0.0
+26                 1007   category_6  ...                 1.0                  0.0
+27                 1008   category_2  ...                 0.0                  0.0
+28                 1008   category_2  ...                 0.0                  0.0
+29                 1008   category_8  ...                 0.0                  0.0
+30                 1008   category_9  ...                 0.0                  0.0
+31                 1009   category_5  ...                 1.0                  0.0
+32                 1009   category_6  ...                 0.0                  1.0
+33                 1009   category_7  ...                 0.0                  1.0
+34                 1009   category_8  ...                 1.0                  0.0
+35                 1009   category_9  ...                 0.0                  0.0
+36                 1010  category_10  ...                 0.0                  0.0
+37                 1010   category_4  ...                 1.0                  0.0
+
+[38 rows x 8 columns]
+
+
+Pivot table for all:
+
+   time_group  location_id  count
+0  2025-11-08         1005      1
+1  2025-11-08         1008      1
+2  2025-11-09         1001      2
+3  2025-11-09         1002      1
+4  2025-11-09         1003      2
+5  2025-11-09         1004      2
+6  2025-11-09         1006      2
+7  2025-11-09         1007      1
+8  2025-11-09         1008      1
+9  2025-11-10         1001      1
+10 2025-11-10         1002      1
+11 2025-11-10         1004      1
+12 2025-11-10         1005      1
+13 2025-11-10         1006      1
+14 2025-11-10         1007      1
+15 2025-11-10         1008      2
+16 2025-11-10         1009      2
+17 2025-11-10         1010      1
+18 2025-11-11         1001      3
+19 2025-11-11         1005      1
+20 2025-11-11         1006      1
+21 2025-11-11         1007      1
+22 2025-11-11         1009      2
+23 2025-11-11         1010      1
+24 2025-11-12         1002      2
+25 2025-11-12         1003      1
+26 2025-11-12         1004      1
+27 2025-11-12         1005      1
+28 2025-11-12         1006      1
+29 2025-11-12         1009      2
