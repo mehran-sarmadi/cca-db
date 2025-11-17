@@ -6,6 +6,7 @@ from tqdm import tqdm
 import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
+import pandas as pd
 
 # Load environment variables from .env
 load_dotenv()
@@ -100,3 +101,44 @@ class PostgresDBOps:
 					# Fallback for older PG versions: ignore index creation errors
 					pass
 
+	def add_or_increment(self, table: str, data_dict: Dict[str, Any], count_col: str = "count"):
+		"""
+		Args:
+			table: Name of the table to update
+			columns: The column values to add or increment
+		"""
+		if "subcategory" in data_dict:
+			columns = ["category", "subcategory"]
+		else:
+			columns = ["category"]
+
+		where_clause = f"{columns[0]} = %s"
+		values = (data_dict[columns[0]],)
+
+		if "subcategory" in data_dict:
+			where_clause += f" AND {columns[1]} = %s"
+			values += (data_dict[columns[1]],)
+
+		check_query = f"SELECT {count_col} FROM {table} WHERE {where_clause}"
+		self.cursor.execute(check_query, values)
+		result = self.cursor.fetchone()
+		
+		if result:
+			# Record exists, increment count by 1
+			update_query = f"UPDATE {table} SET {count_col} = {count_col} + 1 WHERE {where_clause}"
+			self.cursor.execute(update_query, values)
+		else:
+			# Record doesn't exist, insert new row with count 1
+			cols = list(data_dict.keys()) + [count_col]
+			vals = [data_dict[c] for c in cols[:-1]] + [1]
+			placeholders = ", ".join(["%s"] * len(vals))
+			insert_query = f"INSERT INTO {table} ({', '.join(cols)}) VALUES ({placeholders})"
+			self.cursor.execute(insert_query, vals)
+
+	def get_table_as_dataframe(self, table: str) -> pd.DataFrame:
+		query = f"SELECT * FROM {table}"
+		self.cursor.execute(query)
+		rows = self.cursor.fetchall()  # list of tuples
+		cols = [desc[0] for desc in self.cursor.description]
+		df = pd.DataFrame(rows, columns=cols)
+		return df

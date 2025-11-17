@@ -5,20 +5,16 @@ from datetime import datetime, time, timedelta
 import os
 from clickhouse import ClickHouseDBOps
 from tqdm import tqdm
-load_dotenv()
-import random
-from datetime import datetime, timedelta
-from tqdm import tqdm
 import time
 
-import random
+load_dotenv()
 
 def build_mock_data(num_data, num_categories=10, num_subcategories=3):
     sentiments = ["POSITIVE", "NEGATIVE", "NEUTRAL", "NORMAL"]
     satisfaction_classes = ["satisfied", "unsatisfied", "neutral"]
 
-    call_categories = [f"category_{i}" for i in range(1, num_categories + 1)]
-    subcategories = {cat: [f"subcategory_{i}" for i in range(1, num_subcategories + 1)] for cat in call_categories}
+    # call_categories = [f"category_{i}" for i in range(1, num_categories + 1)]
+    # subcategories = {cat: [f"subcategory_{i}" for i in range(1, num_subcategories + 1)] for cat in call_categories}
 
     greetings = [
         "سلام وقت بخیر",
@@ -42,19 +38,26 @@ def build_mock_data(num_data, num_categories=10, num_subcategories=3):
         }
     ]
     now = datetime.now()
-    start_time = now - timedelta(days=90)
+    start_time = now - timedelta(days=30)
     all_data = []
 
     for _ in tqdm(range(num_data), total=num_data):
-        created_at = start_time + timedelta(minutes=random.randint(0, 14400))
+        created_at = start_time + timedelta(minutes=random.randint(0, 30*24*60))
 
         summary = random.choice(summaries)
-        cat = random.choice(call_categories)
-        subcat = random.choice(subcategories[cat])
+        # cat = random.choice(call_categories)
+        # subcat = random.choice(subcategories[cat])
         expert_sentiment = random.choice(sentiments)
         subscriber_sentiment = random.choice(sentiments)
         satisfaction = random.choice(satisfaction_classes)
         farewell_text = random.choice([g for g in greetings if "خداحافظ" in g or "خدانگهدار" in g])
+        cal_subcategory_existing = []
+        for i in range(random.randint(0, num_categories)):
+            for j in range(random.randint(1, num_subcategories)):
+                cal_subcategory_existing.append({
+                    "category": f"category_{i + 1}",
+                    "subcategory": f"subcategory_{i + 1}_{j + 1}"
+                })
 
         data = {
             "sentiment_analysis": {
@@ -94,15 +97,13 @@ def build_mock_data(num_data, num_categories=10, num_subcategories=3):
                 }
             },
             "summary": summary,
-            "sugestions": "",
+            "suggestions": "",
             "satisfaction": {
                 "class": satisfaction
             },
-            "call_category_existing": [cat],
+            # "call_category_existing": [cat],
             "call_category_new": [],
-            "call_subcategory_existing": [
-                {"subcategory": subcat, "category": cat}
-            ],
+            "call_subcategory_existing": cal_subcategory_existing,
             "call_subcategory_new": [],
             "created_at": created_at.strftime("%Y-%m-%d %H:%M:%S"),
             "loc_id": 1000 + random.randint(1, 10)
@@ -167,7 +168,7 @@ def transform_to_clickhouse(mock_data):
         # Summary info
         call_reason = record["summary"]["call_reason_summary"]
         call_summary = record["summary"]["dialogue_summary"]
-        suggestions = record.get("sugestions", "")
+        suggestions = record.get("suggestions", "")
 
         # Other metadata
         location_id = record["loc_id"]
@@ -254,11 +255,11 @@ database = "zaal"
 table_name = "superset_test_final_schema"
 
 # database_operator.ch_client.execute(f"DROP TABLE IF EXISTS {table_name};")
-# database_operator.create_table_if_not_exists(database, table_name, CLICKHOUSE_TABLES[table_name])
+database_operator.create_table_if_not_exists(database, table_name, CLICKHOUSE_TABLES[table_name])
 
 
 # Start time: 10 days ago from now
-all_data = build_mock_data(3000000)
+all_data = build_mock_data(300000)
 transformed_all_data = transform_to_clickhouse(all_data)
 
 # print("Print transformed data:")
@@ -269,9 +270,11 @@ transformed_all_data = transform_to_clickhouse(all_data)
 #         print(f"{value}")
 
 
-
+print("number of records before insertion:")
+print(database_operator.ch_client.execute(f"SELECT COUNT(*) FROM {table_name};"))
 database_operator.insert_batch(table_name, transformed_all_data, batch_size=10000)
-
+print("number of records after insertion:")
+print(database_operator.ch_client.execute(f"SELECT COUNT(*) FROM {table_name};"))
 
 
 

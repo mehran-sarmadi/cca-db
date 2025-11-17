@@ -238,35 +238,7 @@ class ClickHouseDBOps():
         # print(f"Time taken for row counts query: {t2 - t1} seconds")
         df = pd.DataFrame(data, columns=["time_group", "count"])
         return df
-
-
-    # 6. Utility/helper methods
-    @staticmethod
-    def parse_interval(interval_str: str) -> Tuple[int, str]:
-        """Parse interval like '5m', '10min', '4h', '2d', or single-letter 'H','D','M' into (value, unit).
-
-        Returns:
-            (value, unit) where unit is one of 'MINUTE', 'HOUR', 'DAY'.
-        """
-        if not isinstance(interval_str, str):
-            raise ValueError(f"Interval must be a string, got {type(interval_str)}")
-        s = interval_str.strip()
-        # allow optional number (defaults to 1) and units like m|min|minute(s), h|hour|hours|d|day|days
-        match = re.match(r"(?:(\d+)\s*)?(m|min|minute|minutes|h|hour|hours|d|day|days)$", s, re.I)
-        if not match:
-            raise ValueError(f"Invalid interval format: {interval_str}")
-        value_str = match.group(1)
-        value = int(value_str) if value_str is not None else 1
-        unit_raw = match.group(2).lower()
-        if unit_raw.startswith("m"):
-            return value, "MINUTE"
-        if unit_raw.startswith("h"):
-            return value, "HOUR"
-        if unit_raw.startswith("d"):
-            return value, "DAY"
-        raise ValueError(f"Unsupported interval unit: {unit_raw}")
     
-
     def counts_per_timestep_all_locs(
         self,
         table: str,
@@ -303,8 +275,6 @@ class ClickHouseDBOps():
         }
 
         return result
-
-
 
     def get_category_counts_pivot_all_locs(self, table, column, start_date, end_date, freq):
         interval_value, interval_unit = self.parse_interval(freq)
@@ -392,3 +362,28 @@ class ClickHouseDBOps():
         """
         data = self.ch_client.execute(query)
         return pd.DataFrame(data, columns=["time_group", "location_id", "count"])
+    # 6. Utility/helper methods
+    @staticmethod
+    def parse_interval(interval_str: str) -> Tuple[int, str]:
+        """Parse interval like '5m', '10min', '4h', '2d', or single-letter 'H','D','M' into (value, unit).
+
+        Returns:
+            (value, unit) where unit is one of 'MINUTE', 'HOUR', 'DAY'.
+        """
+        if not isinstance(interval_str, str):
+            raise ValueError(f"Interval must be a string, got {type(interval_str)}")
+        s = interval_str.strip()
+        # allow optional number (defaults to 1) and units like m|min|minute(s), h|hour|hours|d|day|days
+        match = re.match(r"(?:(\d+)\s*)?(m|min|minute|minutes|h|hour|hours|d|day|days)$", s, re.I)
+        if not match:
+            raise ValueError(f"Invalid interval format: {interval_str}")
+        value_str = match.group(1)
+        value = int(value_str) if value_str is not None else 1
+        unit_raw = match.group(2).lower()
+        if unit_raw.startswith("m"):
+            return value, "MINUTE"
+        if unit_raw.startswith("h"):
+            return value, "HOUR"
+        if unit_raw.startswith("d"):
+            return value, "DAY"
+        raise ValueError(f"Unsupported interval unit: {unit_raw}")
